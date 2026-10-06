@@ -71,37 +71,12 @@ Connect detected atmospheric changes to Earth-system and environmental impacts.
 
 The project uses NASA Earth-science observations and datasets as the foundation for future data integration.
 
-### NASA Earthdata
-
-NASA's primary Earth-observation data portal:
-
 https://www.earthdata.nasa.gov/
-
-NASA Earthdata provides access to Earth-science datasets covering atmospheric temperature, water vapor, aerosols, ozone, radiation, and other variables.
-
-### NASA Earthdata Search
-
 https://search.earthdata.nasa.gov/
-
-Useful for searching NASA's large collection of Earth-observation datasets by variable, location, and time period.
-
-### NASA Earth Science Data
-
 https://science.nasa.gov/earth/data/
-
-NASA's Earth-science data gateway.
-
-### NASA Open Data
-
 https://data.nasa.gov/
-
-NASA's public data catalog.
-
-### NASA My NASA Data
-
 https://mynasadata.larc.nasa.gov/
 
-Useful Earth-system datasets include long-term surface temperature, aerosol optical depth, ozone, and other atmospheric variables.
 
 ### MODIS Atmosphere Products
 
