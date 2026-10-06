@@ -187,30 +187,6 @@ This combination helps reduce sensitivity to outliers and non-normal distributio
 
 ---
 
-## Repository Structure
-
-```text
-EARTH-ORBIT/
-│
-├── README.md
-│
-├── data/
-│   └── README.md
-│
-├── src/
-│   └── README.md
-│
-├── docs/
-│   └── PROJECT_PROGRESS.md
-│
-├── assets/
-│   └── README.md
-│
-└── LICENSE
-```
-
----
-
 ## Project Status
 
 **Status:** MVP / Active Development
