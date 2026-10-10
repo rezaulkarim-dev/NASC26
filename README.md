@@ -10,7 +10,7 @@ The project approaches Earth-system analysis as a **trend-detection mission**: s
 
 **MVP:** [EARTH//ORBIT Web Application](https://craft-kind-build.lovable.app/)
 
-**Project Video:** [Watch on YouTube](https://www.youtube.com/watch?v=80NcQQ_SNIo)
+**Project Video:** [Watch on YouTube](https://youtu.be/fdDJLjaXfHc)
 
 The current MVP demonstrates:
 
