@@ -135,7 +135,7 @@ Because **EARTH//ORBIT** is engineered as a zero-dependency web application, any
 
 1. **Clone the repository:**
    ```bash
-   git clone <YOUR_GITHUB_REPOSITORY_URL>
+   git clone <github.com/rezaulkarim-dev/NASC26.git>
    cd earth-orbit
    ```
 2. **Launch the game:**
