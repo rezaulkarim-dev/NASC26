@@ -1,4 +1,4 @@
-# EARTH//ORBIT — The Earth Detective Agency
+# 🌍EARTH//ORBIT — The Earth Detective Agency
 
 **Five Layers. One Planet. A System of Secrets.**
 
@@ -12,7 +12,7 @@
 
 ---
 
-## High-Level Summary
+## 🚀High-Level Summary
 
 **EARTH//ORBIT (The Earth Detective Agency)** is an interactive 2D scientific role-playing game (RPG) that transforms over 40 years of NASA satellite and reanalysis observations into a hands-on mystery across all five layers of Earth's atmosphere (0 km to 10,000 km). Built for high school students, university learners, educators, and citizen scientists, it solves the problem of overwhelming, disconnected climate datasets by empowering players to investigate how a single physical process drives opposite trends in different atmospheric regions. Guided by scientific mentors (Dr. Nova, Commander Atlas, and ORBIT AI), players operate interactive satellite consoles, run live non-parametric Mann-Kendall significance tests and Theil-Sen slope estimators in the browser, and connect multi-layer evidence on an interactive Evidence Wall to certify their final Earth System Dossier.
 
@@ -20,7 +20,7 @@
 
 ---
 
-## Project Details
+## 🔬Project Details
 
 ### 1. The Challenge We Answered: "Be An Earth System Trend Detective!"
 
@@ -33,7 +33,7 @@ For students and the general public, raw satellite tables and isolated academic 
 
 ---
 
-## Visual Walkthrough & Gameplay
+## 🎮Visual Walkthrough & Gameplay
 
 | 1. Title Screen & NASA Data Citations | 2. EDA Ground Base & Expression Engine |
 | :---: | :---: |
@@ -72,7 +72,7 @@ Players navigate a multi-room pixel-art orbital complex using `WASD` / `Arrow Ke
 
 ---
 
-### 3. Built-In Statistical Engine (Mann-Kendall and Theil-Sen)
+### 3. 📈Built-In Statistical Engine (Mann-Kendall and Theil-Sen)
 
 Rather than showing static pre-rendered charts, Instrument 2B executes live non-parametric statistical trend tests directly in JavaScript as players adjust time windows (1979-1997, 2000-2025, or 1979-2025):
 
@@ -84,10 +84,10 @@ Rather than showing static pre-rendered charts, Instrument 2B executes live non-
 
 ### 4. Highlighted Features
 
-* **Judge Fast-Track Sandbox (`JUDGE / SETTINGS`):** All 5 atmospheric floors are unlocked in the Atmospheric Elevator from the very start. Judges can also click **"Unlock All 5 Evidence Cards & Open Evidence Wall"** in the settings menu to test the end-game synthesis immediately.
-* **Dynamic Character Expression Engine:** Custom 6-emotion sprite system (`Neutral`, `Explaining`, `Thinking`, `Concerned`, `Surprised`, `Happy`) for Dr. Nova and ORBIT AI, paired with custom portraits for Commander Atlas and Junior Detective Steve.
-* **Procedural Web Audio Synthesizer:** Zero external audio files required—ambient space chords, typewriter blips, radar sweeps, and airlock doors are synthesized live via the browser's `AudioContext`.
-* **One-Click Dossier Export:** Players can edit their scientific synthesis notes and copy a formatted text dossier of their multi-layer findings directly to their clipboard.
+* **⚡Judge Fast-Track Sandbox (`⚙JUDGE / SETTINGS`):** All 5 atmospheric floors are unlocked in the Atmospheric Elevator from the very start. Judges can also click **"Unlock All 5 Evidence Cards & Open Evidence Wall"** in the settings menu to test the end-game synthesis immediately.
+* **🎭Dynamic Character Expression Engine:** Custom 6-emotion sprite system (`Neutral`, `Explaining`, `Thinking`, `Concerned`, `Surprised`, `Happy`) for Dr. Nova and ORBIT AI, paired with custom portraits for Commander Atlas and Junior Detective Steve.
+* **🎵Procedural Web Audio Synthesizer:** Zero external audio files required—ambient space chords, typewriter blips, radar sweeps, and airlock doors are synthesized live via the browser's `AudioContext`.
+* **📋One-Click Dossier Export:** Players can edit their scientific synthesis notes and copy a formatted text dossier of their multi-layer findings directly to their clipboard.
 
 ---
 
@@ -100,7 +100,7 @@ Rather than showing static pre-rendered charts, Instrument 2B executes live non-
 
 ---
 
-## Data Used (NASA Data Sources)
+## 🛰Data Used (NASA Data Sources)
 
 Every NASA dataset below is integrated into the gameplay consoles, cited inside the in-game **`NASA SOURCES`** modal, and demonstrated on camera in our submission videos:
 
@@ -118,7 +118,7 @@ Every NASA dataset below is integrated into the gameplay consoles, cited inside 
 
 ---
 
-## Tools and Technologies
+## 🛠Tools and Technologies
 
 * **Frontend & Game Engine:** Custom HTML5 `<canvas>` 2D tilemap, collision, and Y-sorted humanoid sprite rendering engine written in 100% Vanilla JavaScript (ES6+) with zero external framework bloat.
 * **UI & Styling:** Custom CSS3 RPG Maker MZ-inspired window skin, CSS sprite-sheet slicer (`600% x 200%` 6-column emotion grid), and responsive Flexbox/Grid layouts.
@@ -129,7 +129,7 @@ Every NASA dataset below is integrated into the gameplay consoles, cited inside 
 
 ---
 
-## Quick Start (Run Locally in 5 Seconds)
+## ⚡Quick Start (Run Locally in 5 Seconds)
 
 Because **EARTH//ORBIT** is engineered as a zero-dependency web application, anyone can run it offline or locally without installing Node.js or build tools:
 
@@ -147,7 +147,7 @@ Because **EARTH//ORBIT** is engineered as a zero-dependency web application, any
 
 ---
 
-## Team Duurbin
+## 👥Team Duurbin
 
 | Team Member | Role | Key Contributions |
 | :--- | :--- | :--- |
@@ -157,7 +157,7 @@ Because **EARTH//ORBIT** is engineered as a zero-dependency web application, any
 
 ---
 
-## Use of AI and Asset Disclosure
+## 🤖Use of AI and Asset Disclosure
 
 In full compliance with the **NASA Space Apps Challenge 2026 Participant Guide** (Section 10 & Section 15):
 
@@ -169,7 +169,7 @@ In full compliance with the **NASA Space Apps Challenge 2026 Participant Guide**
 
 ---
 
-## References and Citations
+## 📚References and Citations
 
 1. NASA Earthdata: *Remote Sensors & Earth Observation Data* — [https://www.earthdata.nasa.gov/](https://www.earthdata.nasa.gov/)
 2. NASA Ames Earth Science Division: *Atmospheric Structure & Composition* — [https://www.nasa.gov/ames/earth-science/](https://www.nasa.gov/ames/earth-science/)
@@ -180,6 +180,6 @@ In full compliance with the **NASA Space Apps Challenge 2026 Participant Guide**
 
 ---
 
-## License and Open-Source Compliance
+## 📄License and Open-Source Compliance
 
 This project is released under the **MIT License** in accordance with NASA Space Apps Challenge open-source rules. All code and documentation are openly accessible for judges, educators, and students worldwide.
