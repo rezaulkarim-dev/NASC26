@@ -2,12 +2,4417 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>test-1</title>
+    <title>EARTH//ORBIT — 2D Pixel RPG (RPG Maker MZ Edition)</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=JetBrains+Mono:wght@500;600;700&family=Orbitron:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      * {
+        box-sizing: border-box;
+        user-select: none;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        background: #030611;
+        color: #f8fafc;
+        font-family: "Chakra Petch", "Inter", sans-serif;
+        overflow: hidden;
+        width: 100vw;
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+        -webkit-font-smoothing: antialiased;
+      }
+      .font-pixel {
+        font-family: "Chakra Petch", sans-serif;
+        font-weight: 700;
+        letter-spacing: 0.6px;
+      }
+      .font-title {
+        font-family: "Orbitron", "Chakra Petch", sans-serif;
+        font-weight: 800;
+        letter-spacing: 1.5px;
+      }
+      .font-vt {
+        font-family: "JetBrains Mono", monospace;
+      }
+      .font-tech {
+        font-family: "Chakra Petch", sans-serif;
+      }
+
+      /* Top Retro RPG HUD Bar */
+      #topHud {
+        height: 52px;
+        background: linear-gradient(180deg, #1b263b 0%, #0d1527 100%);
+        border-bottom: 3px solid #64748b;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 16px;
+        z-index: 20;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.7);
+      }
+      .hud-group {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .rpg-badge {
+        background: rgba(15, 23, 42, 0.92);
+        border: 2px solid #94a3b8;
+        border-radius: 6px;
+        padding: 5px 12px;
+        font-family: "Chakra Petch", sans-serif;
+        font-weight: 700;
+        font-size: 13px;
+        letter-spacing: 0.5px;
+        color: #f8fafc;
+        box-shadow: inset 0 0 8px rgba(56, 189, 248, 0.2);
+      }
+      .rpg-btn {
+        background: linear-gradient(180deg, #2b5876 0%, #17354d 100%);
+        border: 2px solid #e2e8f0;
+        border-radius: 6px;
+        padding: 6px 14px;
+        font-family: "Chakra Petch", sans-serif;
+        font-weight: 700;
+        font-size: 13px;
+        letter-spacing: 0.6px;
+        color: #ffffff;
+        cursor: pointer;
+        transition: all 0.15s ease;
+        box-shadow: 0 3px 6px rgba(0, 0, 0, 0.4);
+      }
+      .rpg-btn:hover {
+        filter: brightness(1.2);
+        transform: translateY(-1px);
+      }
+      .rpg-btn:active {
+        transform: translateY(1px);
+      }
+      .rpg-btn-gold {
+        background: linear-gradient(180deg, #d97706 0%, #92400e 100%);
+        border-color: #fef08a;
+        color: #fff;
+      }
+
+      /* Main Full-Screen RPG Viewport */
+      #viewport {
+        position: relative;
+        flex: 1;
+        width: 100%;
+        height: calc(100vh - 52px);
+        background: #02040a;
+        overflow: hidden;
+      }
+      #gameCanvas {
+        width: 100%;
+        height: 100%;
+        display: block;
+        image-rendering: pixelated;
+      }
+
+      /* ===================================================================
+       RPG MAKER MZ STYLE DIALOGUE BOX WITH HIGH-DEFINITION BUST PORTRAITS
+       =================================================================== */
+      #rpgDialogueBox {
+        position: absolute;
+        left: 20px;
+        right: 20px;
+        bottom: 16px;
+        height: 178px;
+        background: linear-gradient(
+          180deg,
+          rgba(24, 43, 66, 0.96) 0%,
+          rgba(13, 27, 42, 0.98) 100%
+        );
+        border: 4px solid #f8fafc;
+        outline: 3px solid #09131d;
+        border-radius: 12px;
+        box-shadow:
+          0 16px 40px rgba(0, 0, 0, 0.85),
+          inset 0 2px 0 rgba(255, 255, 255, 0.35);
+        display: none;
+        align-items: center;
+        padding: 12px 20px;
+        gap: 20px;
+        z-index: 35;
+        backdrop-filter: blur(8px);
+      }
+      #rpgDialogueBox.active {
+        display: flex;
+        animation: slideUpDlg 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+      @keyframes slideUpDlg {
+        from {
+          transform: translateY(20px);
+          opacity: 0;
+        }
+        to {
+          transform: translateY(0);
+          opacity: 1;
+        }
+      }
+
+      /* Floating RPG Maker MZ Nameplate */
+      #dlgNameTag {
+        position: absolute;
+        top: -20px;
+        left: 36px;
+        background: linear-gradient(180deg, #0284c7 0%, #034870 100%);
+        border: 3px solid #f8fafc;
+        outline: 2px solid #09131d;
+        border-radius: 6px;
+        padding: 4px 16px;
+        font-family: "Orbitron", "Chakra Petch", sans-serif;
+        font-weight: 700;
+        font-size: 14px;
+        letter-spacing: 1px;
+        color: #fef08a;
+        text-shadow: 1px 2px 2px #000;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+        z-index: 40;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      #dlgEmotionBadge {
+        font-family: "JetBrains Mono", monospace;
+        font-weight: 700;
+        font-size: 11px;
+        background: rgba(15, 23, 42, 0.9);
+        border: 1px solid #38bdf8;
+        border-radius: 4px;
+        padding: 2px 8px;
+        color: #38bdf8;
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+      }
+
+      /* HD Character Bust Portrait Frame */
+      #portraitFrame {
+        width: 140px;
+        height: 154px;
+        background: radial-gradient(
+          circle at 50% 30%,
+          #38bdf8 0%,
+          #034f78 60%,
+          #082238 100%
+        );
+        border: 3px solid #f8fafc;
+        outline: 2px solid #09131d;
+        border-radius: 8px;
+        flex-shrink: 0;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow:
+          inset 0 0 16px rgba(0, 0, 0, 0.5),
+          0 6px 14px rgba(0, 0, 0, 0.4);
+        position: relative;
+      }
+      #portraitImage {
+        width: 100%;
+        height: 100%;
+        display: none;
+        background-repeat: no-repeat;
+        background-size: 600% 200%; /* 6 columns, 2 rows for the expression sheet */
+        image-rendering: auto;
+      }
+      #portraitSvgContainer {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .dlg-content {
+        flex: 1;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        padding-top: 8px;
+      }
+      #dlgRoleBadge {
+        font-family: "JetBrains Mono", monospace;
+        font-weight: 600;
+        font-size: 12px;
+        letter-spacing: 1.2px;
+        color: #67e8f9;
+        text-transform: uppercase;
+        margin-bottom: 6px;
+      }
+      #dlgText {
+        font-family: "Chakra Petch", "Inter", sans-serif;
+        font-weight: 600;
+        font-size: 17px;
+        line-height: 1.55;
+        letter-spacing: 0.3px;
+        color: #ffffff;
+        text-shadow: 1px 2px 3px rgba(0, 0, 0, 0.9);
+        flex: 1;
+        overflow-y: auto;
+      }
+      .dlg-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-top: 4px;
+      }
+      .blink-arrow {
+        font-family: "Chakra Petch", sans-serif;
+        font-weight: 700;
+        font-size: 14px;
+        letter-spacing: 0.8px;
+        color: #fef08a;
+        animation: blink 0.8s infinite;
+        cursor: pointer;
+      }
+      @keyframes blink {
+        0%,
+        100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.2;
+        }
+      }
+
+      /* Title Screen */
+      #titleScreen {
+        position: fixed;
+        inset: 0;
+        z-index: 50;
+        background: radial-gradient(circle at 50% 30%, #0f2c4a 0%, #040813 75%);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+      }
+      .title-window {
+        background: linear-gradient(180deg, #1e3a5f 0%, #0d1e34 100%);
+        border: 4px solid #f8fafc;
+        outline: 3px solid #090d16;
+        border-radius: 12px;
+        padding: 26px 36px;
+        max-width: 720px;
+        width: 100%;
+        text-align: center;
+        box-shadow: 0 25px 60px rgba(0, 0, 0, 0.9);
+      }
+      .title-menu-box {
+        margin: 22px auto 0;
+        max-width: 360px;
+        background: linear-gradient(180deg, #1b354f 0%, #0a1b2b 100%);
+        border: 3px solid #cbd5e1;
+        border-radius: 8px;
+        padding: 14px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      /* Modal Windows */
+      .rpg-modal-backdrop {
+        position: fixed;
+        inset: 0;
+        background: rgba(2, 6, 23, 0.85);
+        z-index: 60;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        padding: 16px;
+      }
+      .rpg-modal-backdrop.active {
+        display: flex;
+      }
+      .rpg-window {
+        background: linear-gradient(180deg, #182e4b 0%, #0c1a2d 100%);
+        border: 4px solid #f8fafc;
+        outline: 3px solid #090d16;
+        border-radius: 12px;
+        max-width: 860px;
+        width: 100%;
+        max-height: 90vh;
+        overflow-y: auto;
+        padding: 20px;
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.9);
+        color: #f8fafc;
+      }
+      .rpg-window-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 3px solid #64748b;
+        padding-bottom: 12px;
+        margin-bottom: 16px;
+      }
+      .rpg-subbox {
+        background: rgba(15, 23, 42, 0.9);
+        border: 2px solid #64748b;
+        border-radius: 8px;
+        padding: 14px;
+        margin-bottom: 12px;
+      }
+      input[type="range"] {
+        width: 100%;
+        accent-color: #38bdf8;
+        cursor: pointer;
+      }
+
+      /* On-Screen D-Pad */
+      #dpadContainer {
+        position: absolute;
+        bottom: 20px;
+        left: 20px;
+        z-index: 25;
+        display: grid;
+        grid-template-columns: repeat(3, 42px);
+        grid-template-rows: repeat(3, 42px);
+        gap: 4px;
+        opacity: 0.85;
+      }
+      .dpad-btn {
+        background: #1e293b;
+        border: 2px solid #cbd5e1;
+        border-radius: 6px;
+        color: #fff;
+        font-weight: bold;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .dpad-btn:active {
+        background: #38bdf8;
+        color: #000;
+      }
+
+      /* Override 2nd box (Commander Atlas) on Home Menu */
+      #titleBustsStrip > *:nth-child(2) {
+        background: #000 url("Char/Commander Atlas/Commander Atlas.png") top
+          center / cover no-repeat !important;
+      }
+      #titleBustsStrip > *:nth-child(2) * {
+        display: none !important;
+      }
+
+      /* Override 4th box (Steve - Junior Detective) on Home Menu */
+      #titleBustsStrip > *:nth-child(4) {
+        background: #000 url("Char/Main Player/user.png") top center / cover
+          no-repeat !important;
+      }
+      #titleBustsStrip > *:nth-child(4) * {
+        display: none !important;
+      }
+    </style>
   </head>
   <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
+    <!-- Adding background Music -->
+    <audio id="bgmPlayer" src="music/game_background.mp3" loop preload="auto"></audio>
+
+    <!-- ------------------------------------------------------------------------------>
+
+    <!-- ===================================================================== -->
+    <!-- 1. RETRO TITLE SCREEN WITH HD CHARACTER SHOWCASE                      -->
+    <!-- ===================================================================== -->
+    <div id="titleScreen">
+      <div class="title-window">
+        <div
+          class="font-pixel"
+          style="
+            font-size: 14px;
+            color: #7dd3fc;
+            margin-bottom: 8px;
+            letter-spacing: 1.5px;
+          "
+        >
+          NASA SPACE APPS CHALLENGE 2026 // TEAM DUURBIN
+        </div>
+        <h1
+          class="font-title"
+          style="
+            font-size: 42px;
+            color: #fde047;
+            text-shadow: 3px 4px 0 #000;
+            margin-bottom: 10px;
+          "
+        >
+          EARTH//ORBIT
+        </h1>
+        <p
+          style="
+            font-size: 16px;
+            font-weight: 600;
+            color: #e2e8f0;
+            margin-bottom: 16px;
+            letter-spacing: 0.6px;
+          "
+        >
+          THE EARTH DETECTIVE AGENCY — FIVE LAYERS. ONE PLANET. A SYSTEM OF
+          SECRETS.
+        </p>
+
+        <!-- HD Character Bust Showcase Preview Strip -->
+        <div
+          id="titleBustsStrip"
+          style="
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 12px;
+          "
+        ></div>
+        <div
+          class="font-pixel"
+          style="
+            font-size: 13px;
+            color: #cbd5e1;
+            margin-bottom: 12px;
+            letter-spacing: 1px;
+          "
+        >
+          DR. NOVA • COMMANDER ATLAS • ORBIT AI • STEVE (JUNIOR DETECTIVE)
+        </div>
+
+        <div class="title-menu-box" style="max-width: 420px">
+          <button
+            class="rpg-btn rpg-btn-gold"
+            style="font-size: 15px; padding: 10px 16px"
+            onclick="startNewGame()"
+          >
+            ▶ START / CONTINUE INVESTIGATION
+          </button>
+          <button
+            class="rpg-btn"
+            style="font-size: 14px; padding: 9px 16px"
+            onclick="openElevatorFromTitle()"
+          >
+            🛗 ATMOSPHERIC ELEVATOR (5 LAYERS)
+          </button>
+          <button
+            class="rpg-btn"
+            style="font-size: 14px; padding: 9px 16px"
+            onclick="openNotebookFromTitle()"
+          >
+            📓 DETECTIVE EVIDENCE ARCHIVE
+          </button>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px">
+            <button
+              class="rpg-btn"
+              style="font-size: 12px; padding: 8px 10px"
+              onclick="openCreditsModal()"
+            >
+              🛰️ NASA SOURCES
+            </button>
+            <button
+              class="rpg-btn"
+              style="font-size: 12px; padding: 8px 10px"
+              onclick="openSettingsModal()"
+            >
+              ⚙️ JUDGE / SETTINGS
+            </button>
+          </div>
+        </div>
+
+        <div
+          class="font-pixel"
+          style="
+            font-size: 13px;
+            color: #94a3b8;
+            margin-top: 16px;
+            line-height: 1.6;
+          "
+        >
+          CONTROLS: [WASD / ARROWS] OR CLICK TO WALK • [E / SPACE] TO INTERACT
+        </div>
+      </div>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- 2. TOP RETRO RPG HUD BAR                                              -->
+    <!-- ===================================================================== -->
+    <header id="topHud">
+      <div class="hud-group">
+        <button
+          class="rpg-btn"
+          onclick="
+            document.getElementById('titleScreen').style.display = 'flex'
+          "
+        >
+          🏠 TITLE
+        </button>
+        <div class="rpg-badge" id="hudZoneName">EDA STATION // QUARTERS</div>
+        <div class="rpg-badge" id="hudAltitude" style="color: #fde047">
+          ALT: 0.0 KM
+        </div>
+      </div>
+
+      <div class="hud-group" style="flex: 1; max-width: 480px; margin: 0 12px">
+        <div
+          class="rpg-badge"
+          style="
+            width: 100%;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            color: #67e8f9;
+          "
+          id="hudQuestText"
+        >
+          QUEST: Inspect your terminal [E], then walk North to the Command
+          Bridge!
+        </div>
+      </div>
+
+      <div class="hud-group">
+        <!-- Preload Local Character Expression Sheet Images (Removed CORS blockers for local testing) -->
+        <img
+          id="img_exprSheet"
+          src="Char/Dr. Nova and Orbit Expression Sheet.png"
+          style="display: none"
+          onerror="
+            this.onerror = null;
+            this.failed = true;
+          "
+        />
+        <input
+          type="file"
+          id="sheetFileInput"
+          accept="image/*"
+          style="display: none"
+          onchange="handleManualSheetUpload(event)"
+        />
+        <!-- <button class="rpg-btn" onclick="document.getElementById('sheetFileInput').click()" title="Load Dr. Nova & ORBIT Expression Sheet PNG">📷 PNG</button> -->
+
+        <button class="rpg-btn rpg-btn-gold" onclick="openElevatorModal()">
+          🛗 ELEVATOR
+        </button>
+        <button
+          class="rpg-btn"
+          onclick="openNotebookModal()"
+          id="hudEvidenceBtn"
+        >
+          🃏 CARDS: 0/5
+        </button>
+        <button
+          class="rpg-btn"
+          style="border-color: #c084fc; color: #e9d5ff"
+          onclick="openEvidenceWallModal()"
+        >
+          🕸️ EVIDENCE WALL
+        </button>
+        <button
+          class="rpg-btn"
+          onclick="openCreditsModal()"
+          title="NASA Data Sources & Scientific References"
+        >
+          🛰️ DATA
+        </button>
+        <button
+          class="rpg-btn"
+          onclick="openSettingsModal()"
+          title="Judge Mode & Settings"
+        >
+          ⚙️
+        </button>
+        <button
+          class="rpg-btn"
+          onclick="toggleBgm()"
+          id="hudBgmBtn"
+          title="Toggle Ambient Space Synth"
+        >
+          🎵
+        </button>
+        <button
+          class="rpg-btn"
+          onclick="toggleMute()"
+          id="hudMuteBtn"
+          title="Toggle Sound Effects"
+        >
+          🔊
+        </button>
+      </div>
+    </header>
+
+    <!-- ===================================================================== -->
+    <!-- 3. FULL-SCREEN 2D PIXEL RPG VIEWPORT & HD RPG MAKER MZ DIALOGUE BOX   -->
+    <!-- ===================================================================== -->
+    <div id="viewport">
+      <canvas id="gameCanvas"></canvas>
+
+      <!-- On-Screen D-Pad -->
+      <div id="dpadContainer">
+        <div></div>
+        <button
+          class="dpad-btn"
+          onmousedown="setPad(0, -1)"
+          onmouseup="setPad(0, 0)"
+          ontouchstart="setPad(0,-1);event.preventDefault()"
+          ontouchend="setPad(0,0)"
+        >
+          ▲
+        </button>
+        <div></div>
+        <button
+          class="dpad-btn"
+          onmousedown="setPad(-1, 0)"
+          onmouseup="setPad(0, 0)"
+          ontouchstart="setPad(-1,0);event.preventDefault()"
+          ontouchend="setPad(0,0)"
+        >
+          ◀
+        </button>
+        <button
+          class="dpad-btn"
+          style="background: #d97706; font-size: 11px"
+          onclick="triggerInteract()"
+        >
+          E
+        </button>
+        <button
+          class="dpad-btn"
+          onmousedown="setPad(1, 0)"
+          onmouseup="setPad(0, 0)"
+          ontouchstart="setPad(1,0);event.preventDefault()"
+          ontouchend="setPad(0,0)"
+        >
+          ▶
+        </button>
+        <div></div>
+        <button
+          class="dpad-btn"
+          onmousedown="setPad(0, 1)"
+          onmouseup="setPad(0, 0)"
+          ontouchstart="setPad(0,1);event.preventDefault()"
+          ontouchend="setPad(0,0)"
+        >
+          ▼
+        </button>
+        <div></div>
+      </div>
+
+      <!-- RPG MAKER MZ STYLE DIALOGUE BOX -->
+      <div id="rpgDialogueBox" onclick="nextDialogueLine()">
+        <!-- Floating Nameplate Banner with Emotion Tag -->
+        <div id="dlgNameTag">
+          <span id="dlgSpeakerName">DR. NOVA</span>
+          <span id="dlgEmotionBadge">EXPLAINING</span>
+        </div>
+
+        <!-- HD Character Bust Portrait Frame (CSS Sprite for PNG + SVG Fallback) -->
+        <div id="portraitFrame">
+          <img
+            id="customCharImg"
+            src=""
+            alt="Portrait"
+            style="
+              width: 100%;
+              height: 100%;
+              object-fit: cover;
+              object-position: top center;
+              display: none;
+            "
+          />
+          <div id="portraitImage"></div>
+          <div id="portraitSvgContainer"></div>
+        </div>
+
+        <!-- Dialogue Text & Actions -->
+        <div class="dlg-content">
+          <div>
+            <div id="dlgRoleBadge">
+              MISSION SCIENTIST // EDA ATMOSPHERIC RESEARCH
+            </div>
+            <div id="dlgText">Loading transmission...</div>
+          </div>
+          <div class="dlg-footer">
+            <div
+              style="
+                font-size: 12px;
+                font-weight: 700;
+                color: #94a3b8;
+                font-family: &quot;JetBrains Mono&quot;, monospace;
+                letter-spacing: 0.5px;
+              "
+            >
+              [CLICK / SPACE TO ADVANCE]
+            </div>
+            <button
+              id="dlgActionBtn"
+              class="rpg-btn rpg-btn-gold"
+              style="display: none"
+              onclick="
+                event.stopPropagation();
+                runDialogueExtraAction();
+              "
+            ></button>
+            <span class="blink-arrow" id="dlgContinuePrompt">▼ NEXT</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- 4. SCIENTIFIC MODALS (ELEVATOR, INSTRUMENTS, NOTEBOOK)                -->
+    <!-- ===================================================================== -->
+    <div id="rpgModalBackdrop" class="rpg-modal-backdrop">
+      <div class="rpg-window">
+        <div class="rpg-window-header">
+          <div
+            class="font-title"
+            style="font-size: 16px; color: #fde047"
+            id="modalTitle"
+          >
+            MODAL WINDOW
+          </div>
+          <button class="rpg-btn" onclick="closeModal()">✕ CLOSE [ESC]</button>
+        </div>
+        <div id="modalBody"></div>
+      </div>
+    </div>
+
+    <script>
+      /*************************************************************************
+       * 1. RETRO WEB AUDIO SYNTHESIZER & AMBIENT LAYER SOUNDSCAPE (PHASE 5)
+       *************************************************************************/
+      const SFX = {
+        ctx: null,
+        muted: false,
+        bgmPlaying: false,
+        bgmTimer: null,
+        init() {
+          if (!this.ctx) {
+            const AC = window.AudioContext || window.webkitAudioContext;
+            if (AC) this.ctx = new AC();
+          }
+          if (this.ctx && this.ctx.state === "suspended") this.ctx.resume();
+        },
+        tone(freq, type = "square", dur = 0.05, vol = 0.04, slide = null) {
+          if (this.muted) return;
+          try {
+            this.init();
+            if (!this.ctx) return;
+            const o = this.ctx.createOscillator(),
+              g = this.ctx.createGain();
+            o.type = type;
+            o.frequency.setValueAtTime(freq, this.ctx.currentTime);
+            if (slide)
+              o.frequency.exponentialRampToValueAtTime(
+                slide,
+                this.ctx.currentTime + dur,
+              );
+            g.gain.setValueAtTime(vol, this.ctx.currentTime);
+            g.gain.exponentialRampToValueAtTime(
+              0.001,
+              this.ctx.currentTime + dur,
+            );
+            o.connect(g);
+            g.connect(this.ctx.destination);
+            o.start();
+            o.stop(this.ctx.currentTime + dur);
+          } catch (e) {}
+        },
+        typeBlip() {
+          this.tone(520 + Math.random() * 120, "square", 0.025, 0.03);
+        },
+        confirm() {
+          this.tone(520, "square", 0.07, 0.06, 780);
+        },
+        scan() {
+          this.tone(310, "sine", 0.22, 0.06, 760);
+        },
+        door() {
+          this.tone(190, "sawtooth", 0.28, 0.05, 420);
+          setTimeout(() => this.tone(420, "sine", 0.18, 0.05, 640), 140);
+        },
+        fanfare() {
+          [523.25, 659.25, 783.99, 1046.5].forEach((f, i) =>
+            setTimeout(() => this.tone(f, "triangle", 0.16, 0.08), i * 105),
+          );
+        },
+        startBgm() {
+          if (this.bgmTimer) clearInterval(this.bgmTimer);
+          this.bgmPlaying = true;
+          const chords = [220, 277.18, 329.63, 440, 329.63, 277.18];
+          let step = 0;
+          this.bgmTimer = setInterval(() => {
+            if (!this.bgmPlaying || this.muted) return;
+            const base = chords[step % chords.length];
+            this.tone(base, "sine", 1.4, 0.018, base * 1.01);
+            step++;
+          }, 1600);
+        },
+        stopBgm() {
+          this.bgmPlaying = false;
+          if (this.bgmTimer) clearInterval(this.bgmTimer);
+        },
+      };
+      function toggleMute() {
+        SFX.muted = !SFX.muted;
+        document.getElementById("hudMuteBtn").textContent = SFX.muted
+          ? "🔇"
+          : "🔊";
+      }
+      // function toggleBgm() {
+      //   if (SFX.bgmPlaying) {
+      //     SFX.stopBgm();
+      //     document.getElementById('hudBgmBtn').style.opacity = '0.55';
+      //   } else {
+      //     SFX.startBgm();
+      //     document.getElementById('hudBgmBtn').style.opacity = '1';
+      //   }
+      // }
+
+      function toggleBgm() {
+        const bgm = document.getElementById("bgmPlayer");
+        const btn = document.getElementById("hudBgmBtn"); // or your music button ID
+        if (!bgm) return;
+
+        bgm.volume = 0.4; // Adjust volume between 0.0 (silent) and 1.0 (max)
+
+        if (bgm.paused) {
+          bgm.play().catch((err) => console.log("Audio play blocked:", err));
+          if (btn) btn.textContent = "🎵 ON";
+        } else {
+          bgm.pause();
+          if (btn) btn.textContent = "🎵 OFF";
+        }
+      }
+
+      /*************************************************************************
+       * 2. EXPRESSION SHEET SLICER & HIGH-DEFINITION BUST PORTRAITS
+       *    Directly supports the 6x2 Dr. Nova & ORBIT Expression Sheet:
+       *    Col 0: Neutral | Col 1: Explaining | Col 2: Thinking |
+       *    Col 3: Concerned | Col 4: Surprised | Col 5: Happy
+       *************************************************************************/
+      const EMOTION_COLS = {
+        neutral: 0,
+        explaining: 1,
+        thinking: 2,
+        concerned: 3,
+        surprised: 4,
+        happy: 5,
+      };
+
+      let customSheetBlobUrl = null;
+      function handleManualSheetUpload(e) {
+        const file = e.target.files && e.target.files[0];
+        if (!file) return;
+        if (customSheetBlobUrl) URL.revokeObjectURL(customSheetBlobUrl);
+        customSheetBlobUrl = URL.createObjectURL(file);
+        const sheet = document.getElementById("img_exprSheet");
+        sheet.failed = false;
+        sheet.src = customSheetBlobUrl;
+        sheet.onload = () => {
+          setupTitleBusts();
+          if (
+            document
+              .getElementById("rpgDialogueBox")
+              .classList.contains("active")
+          ) {
+            renderCurrentDialogueLine();
+          }
+        };
+      }
+
+      // Built-in High-Fidelity Vector Emotion Generator (Faithfully matches the Expression Sheet)
+      function generateNovaEmotionSvg(emotion) {
+        // Hand gestures & expressions based on expression sheet
+        let handPath = "";
+        let eyePathLeft = `<ellipse cx="66" cy="74" rx="7" ry="9" fill="#2b1b17"/><ellipse cx="66" cy="74" rx="5" ry="7" fill="#8b5a2b"/><circle cx="64" cy="71" r="2.5" fill="#ffffff"/><circle cx="68" cy="76" r="1.2" fill="#ffffff"/>`;
+        let eyePathRight = `<ellipse cx="94" cy="74" rx="7" ry="9" fill="#2b1b17"/><ellipse cx="94" cy="74" rx="5" ry="7" fill="#8b5a2b"/><circle cx="92" cy="71" r="2.5" fill="#ffffff"/><circle cx="96" cy="76" r="1.2" fill="#ffffff"/>`;
+        let browLeft = `M57,64 C62,61 71,61 74,64`;
+        let browRight = `M86,64 C89,61 98,61 103,64`;
+        let mouthPath = `M74,94 C77,98 83,98 86,94`;
+        let extraMarks = "";
+
+        if (emotion === "explaining") {
+          // Open explaining mouth & outstretched gesturing hand
+          mouthPath = `M73,92 Q80,103 87,92 Z`;
+          handPath = `
+          <!-- Outstretched Explaining Hand -->
+          <path d="M30,140 Q45,130 54,142 Q48,158 35,165 Z" fill="#fde68a" stroke="#d97706" stroke-width="1.5"/>
+          <ellipse cx="45" cy="142" rx="10" ry="7" fill="#fef3c7" transform="rotate(-15 45 142)"/>
+        `;
+        } else if (emotion === "thinking") {
+          // Hand on chin, thoughtful gaze sideways
+          browLeft = `M56,65 C62,60 70,64 74,65`;
+          browRight = `M86,62 C90,58 98,59 104,61`;
+          eyePathLeft = `<ellipse cx="68" cy="72" rx="7" ry="8" fill="#2b1b17"/><ellipse cx="68" cy="72" rx="5" ry="6" fill="#8b5a2b"/><circle cx="66" cy="70" r="2.2" fill="#ffffff"/>`;
+          eyePathRight = `<ellipse cx="96" cy="72" rx="7" ry="8" fill="#2b1b17"/><ellipse cx="96" cy="72" rx="5" ry="6" fill="#8b5a2b"/><circle cx="94" cy="70" r="2.2" fill="#ffffff"/>`;
+          mouthPath = `M76,95 Q80,94 84,95`;
+          handPath = `
+          <!-- Hand Resting on Chin -->
+          <path d="M86,108 C86,100 96,102 98,114 L94,136 L82,136 Z" fill="#fde68a" stroke="#d97706" stroke-width="1.5"/>
+          <circle cx="88" cy="106" r="4.5" fill="#fef3c7"/>
+        `;
+        } else if (emotion === "concerned") {
+          // Furrowed troubled brows, downturned mouth, hand touching chest
+          browLeft = `M58,61 C64,66 71,67 74,67`;
+          browRight = `M86,67 C89,67 96,66 102,61`;
+          mouthPath = `M74,96 Q80,91 86,96`;
+          handPath = `
+          <!-- Hand Touching Collar / Chest -->
+          <path d="M84,132 Q95,126 104,138 Q96,148 86,144 Z" fill="#fde68a" stroke="#d97706" stroke-width="1.5"/>
+        `;
+        } else if (emotion === "surprised") {
+          // Dilated eyes, open 'o' mouth, nervous sweat mark
+          eyePathLeft = `<ellipse cx="66" cy="73" rx="8" ry="10" fill="#2b1b17"/><ellipse cx="66" cy="73" rx="6" ry="8" fill="#8b5a2b"/><circle cx="64" cy="70" r="3" fill="#ffffff"/>`;
+          eyePathRight = `<ellipse cx="94" cy="73" rx="8" ry="10" fill="#2b1b17"/><ellipse cx="94" cy="73" rx="6" ry="8" fill="#8b5a2b"/><circle cx="92" cy="70" r="3" fill="#ffffff"/>`;
+          browLeft = `M56,58 C62,56 71,56 75,59`;
+          browRight = `M85,59 C89,56 98,56 104,58`;
+          mouthPath = `M76,91 Q80,100 84,91 Q80,88 76,91 Z`;
+          extraMarks = `
+          <path d="M52,66 Q48,72 52,76 Q56,72 52,66 Z" fill="#38bdf8" opacity="0.85"/>
+          <path d="M106,62 L112,58 M107,67 L114,66" stroke="#fde047" stroke-width="2"/>
+        `;
+        } else if (emotion === "happy") {
+          // Happy laughing '^ ^' eyes, wide joyful smile
+          eyePathLeft = `<path d="M58,74 Q66,66 74,74" stroke="#2b1b17" stroke-width="3.5" stroke-linecap="round" fill="none"/>`;
+          eyePathRight = `<path d="M86,74 Q94,66 102,74" stroke="#2b1b17" stroke-width="3.5" stroke-linecap="round" fill="none"/>`;
+          mouthPath = `M72,90 Q80,105 88,90 Z`;
+          extraMarks = `
+          <circle cx="56" cy="84" r="5" fill="#f87171" opacity="0.45"/>
+          <circle cx="104" cy="84" r="5" fill="#f87171" opacity="0.45"/>
+          <path d="M108,66 L114,64 M109,72 L116,74" stroke="#fde047" stroke-width="2"/>
+        `;
+        }
+
+        return `<svg viewBox="0 0 160 180" class="w-full h-full">
+        <defs>
+          <linearGradient id="novaHairGrad" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#4a2e26"/>
+            <stop offset="60%" stop-color="#341f19"/>
+            <stop offset="100%" stop-color="#1e110d"/>
+          </linearGradient>
+          <linearGradient id="gogglesGrad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#60a5fa"/>
+            <stop offset="50%" stop-color="#2563eb"/>
+            <stop offset="100%" stop-color="#1e3a8a"/>
+          </linearGradient>
+        </defs>
+        <!-- High Ponytail Silhouette -->
+        <path d="M102,42 C134,44 145,84 134,124 C124,102 116,72 102,58 Z" fill="#2d1a15"/>
+        
+        <!-- White Lab Coat & Dark Navy Inner Shirt -->
+        <path d="M22,180 L34,126 C45,114 115,114 126,126 L138,180 Z" fill="#ffffff" stroke="#94a3b8" stroke-width="1.5"/>
+        <path d="M58,124 L80,180 L102,124 Z" fill="#1e293b"/>
+        <path d="M66,132 L80,175 L94,132 Z" fill="#0f172a"/>
+        <!-- ID Badge -->
+        <rect x="110" y="148" width="12" height="15" rx="1.5" fill="#38bdf8" stroke="#cbd5e1" stroke-width="1"/>
+
+        <!-- Neck & Face -->
+        <path d="M68,102 L68,126 L92,126 L92,102 Z" fill="#fcd34d"/>
+        <path d="M50,60 C50,95 66,116 80,116 C94,116 110,95 110,60 C110,40 96,34 80,34 C64,34 50,40 50,60 Z" fill="#fffbeb"/>
+
+        <!-- Eyes, Brows & Mouth -->
+        ${eyePathLeft}
+        ${eyePathRight}
+        <path d="${browLeft}" stroke="#2d1a15" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+        <path d="${browRight}" stroke="#2d1a15" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+        <path d="M80,82 L81,85" stroke="#d97706" stroke-width="1.8" stroke-linecap="round"/>
+        <path d="${mouthPath}" fill="${emotion === "surprised" || emotion === "happy" || emotion === "explaining" ? "#b91c1c" : "none"}" stroke="#92400e" stroke-width="2" stroke-linecap="round"/>
+
+        <!-- Dark Brown Hair & Side Tufts -->
+        <path d="M46,60 C46,28 60,18 80,18 C100,18 114,28 114,60 C106,38 94,36 82,42 C72,36 56,40 46,60 Z" fill="url(#novaHairGrad)"/>
+        <path d="M42,54 C42,80 47,94 51,102 C48,86 46,72 46,54 Z" fill="#2d1a15"/>
+        <path d="M118,54 C118,80 113,94 109,102 C112,86 114,72 114,54 Z" fill="#2d1a15"/>
+
+        <!-- Blue Pilot Goggles on Head -->
+        <rect x="52" y="24" width="24" height="15" rx="5" fill="url(#gogglesGrad)" stroke="#cbd5e1" stroke-width="2"/>
+        <rect x="84" y="24" width="24" height="15" rx="5" fill="url(#gogglesGrad)" stroke="#cbd5e1" stroke-width="2"/>
+        <line x1="76" y1="31" x2="84" y2="31" stroke="#334155" stroke-width="3"/>
+        <line x1="56" y1="27" x2="72" y2="27" stroke="#93c5fd" stroke-width="2"/>
+        <line x1="88" y1="27" x2="104" y2="27" stroke="#93c5fd" stroke-width="2"/>
+
+        ${extraMarks}
+        ${handPath}
+      </svg>`;
+      }
+
+      function generateOrbitEmotionSvg(emotion) {
+        let eyesSvg = `<ellipse cx="64" cy="72" rx="7" ry="11" fill="#38bdf8"/><ellipse cx="96" cy="72" rx="7" ry="11" fill="#38bdf8"/>`;
+        let mouthSvg = `<path d="M74,90 Q80,95 86,90" stroke="#38bdf8" stroke-width="2.5" fill="none" stroke-linecap="round"/>`;
+        let gestureSvg = "";
+        let markSvg = "";
+
+        if (emotion === "explaining") {
+          eyesSvg = `
+          <path d="M57,72 Q64,64 71,72" stroke="#38bdf8" stroke-width="3.5" stroke-linecap="round" fill="none"/>
+          <path d="M89,72 Q96,64 103,72" stroke="#38bdf8" stroke-width="3.5" stroke-linecap="round" fill="none"/>
+        `;
+          mouthSvg = `<path d="M73,88 Q80,98 87,88 Z" fill="#38bdf8"/>`;
+          gestureSvg = `
+          <!-- Pointing Finger Hand -->
+          <circle cx="118" cy="120" r="7" fill="#ffffff" stroke="#0284c7" stroke-width="2"/>
+          <line x1="118" y1="120" x2="124" y2="104" stroke="#ffffff" stroke-width="4" stroke-linecap="round"/>
+        `;
+          markSvg = `<path d="M110,60 L118,54 M112,68 L122,66" stroke="#fde047" stroke-width="2.5"/>`;
+        } else if (emotion === "thinking") {
+          eyesSvg = `
+          <rect x="57" y="68" width="14" height="6" rx="3" fill="#38bdf8"/>
+          <rect x="89" y="68" width="14" height="6" rx="3" fill="#38bdf8"/>
+        `;
+          mouthSvg = `<line x1="75" y1="91" x2="85" y2="91" stroke="#38bdf8" stroke-width="2.5" stroke-linecap="round"/>`;
+          gestureSvg = `
+          <!-- Hand on Chin -->
+          <circle cx="86" cy="112" r="7" fill="#ffffff" stroke="#0284c7" stroke-width="2"/>
+        `;
+          markSvg = `
+          <text x="114" y="62" font-family="'Chakra Petch', sans-serif" font-size="18" fill="#38bdf8" font-weight="bold">?</text>
+        `;
+        } else if (emotion === "concerned") {
+          eyesSvg = `
+          <path d="M57,70 Q64,78 71,70" stroke="#38bdf8" stroke-width="3.5" stroke-linecap="round" fill="none"/>
+          <path d="M89,70 Q96,78 103,70" stroke="#38bdf8" stroke-width="3.5" stroke-linecap="round" fill="none"/>
+        `;
+          mouthSvg = `<path d="M74,93 Q80,87 86,93" stroke="#38bdf8" stroke-width="2.5" fill="none" stroke-linecap="round"/>`;
+          gestureSvg = `
+          <!-- Hands Clutched Together -->
+          <circle cx="74" cy="136" r="6" fill="#ffffff" stroke="#0284c7" stroke-width="1.8"/>
+          <circle cx="86" cy="136" r="6" fill="#ffffff" stroke="#0284c7" stroke-width="1.8"/>
+        `;
+        } else if (emotion === "surprised") {
+          eyesSvg = `
+          <circle cx="64" cy="72" r="10" fill="none" stroke="#38bdf8" stroke-width="3.5"/>
+          <circle cx="96" cy="72" r="10" fill="none" stroke="#38bdf8" stroke-width="3.5"/>
+        `;
+          mouthSvg = `<circle cx="80" cy="91" r="5" fill="#38bdf8"/>`;
+          gestureSvg = `
+          <circle cx="60" cy="124" r="6" fill="#ffffff" stroke="#0284c7" stroke-width="2"/>
+          <circle cx="100" cy="124" r="6" fill="#ffffff" stroke="#0284c7" stroke-width="2"/>
+        `;
+          markSvg = `<path d="M110,58 L118,52 M112,66 L122,64" stroke="#fde047" stroke-width="2.5"/>`;
+        } else if (emotion === "happy") {
+          eyesSvg = `
+          <path d="M56,72 Q64,63 72,72" stroke="#38bdf8" stroke-width="3.8" stroke-linecap="round" fill="none"/>
+          <path d="M88,72 Q96,63 104,72" stroke="#38bdf8" stroke-width="3.8" stroke-linecap="round" fill="none"/>
+        `;
+          mouthSvg = `<path d="M72,86 Q80,98 88,86 Z" fill="#38bdf8"/>`;
+          gestureSvg = `
+          <!-- Both Fists Pumped in Victory -->
+          <circle cx="48" cy="116" r="7" fill="#ffffff" stroke="#0284c7" stroke-width="2"/>
+          <circle cx="112" cy="116" r="7" fill="#ffffff" stroke="#0284c7" stroke-width="2"/>
+        `;
+        }
+
+        return `<svg viewBox="0 0 160 180" class="w-full h-full">
+        <!-- White Robot Body & Blue Arc Reactor Core -->
+        <path d="M35,180 L44,126 C55,116 105,116 116,126 L125,180 Z" fill="#f8fafc" stroke="#94a3b8" stroke-width="2"/>
+        <path d="M60,126 L80,165 L100,126 Z" fill="#0284c7"/>
+        <circle cx="80" cy="150" r="12" fill="#0f172a" stroke="#38bdf8" stroke-width="2"/>
+        <circle cx="80" cy="150" r="6" fill="#38bdf8"/>
+
+        <!-- Robot Head Shell & Blue Neon Ears -->
+        <path d="M42,56 C42,26 60,18 80,18 C100,18 118,26 118,56 C118,92 104,106 80,106 C56,106 42,92 42,56 Z" fill="#ffffff" stroke="#cbd5e1" stroke-width="2"/>
+        <!-- Pointed Antenna Ears with Cyan Neon Light -->
+        <polygon points="38,42 22,22 36,54" fill="#ffffff" stroke="#0284c7" stroke-width="2"/>
+        <polygon points="36,40 26,26 34,50" fill="#38bdf8"/>
+        <polygon points="122,42 138,22 124,54" fill="#ffffff" stroke="#0284c7" stroke-width="2"/>
+        <polygon points="124,40 134,26 126,50" fill="#38bdf8"/>
+
+        <!-- Dark Glossy Face Screen -->
+        <rect x="50" y="44" width="60" height="56" rx="14" fill="#050b16" stroke="#1e293b" stroke-width="2"/>
+        
+        <!-- Screen Expressions -->
+        ${eyesSvg}
+        ${mouthSvg}
+        ${gestureSvg}
+        ${markSvg}
+      </svg>`;
+      }
+
+      const HD_PORTRAITS = {
+        nova: {
+          name: "DR. NOVA",
+          role: "MISSION SCIENTIST // EDA ATMOSPHERIC RESEARCH",
+          bg: "radial-gradient(circle at 50% 35%, #0891b2 0%, #083344 65%, #02131d 100%)",
+          getSvg(emotion = "explaining") {
+            return generateNovaEmotionSvg(emotion);
+          },
+        },
+        orbit: {
+          name: "ORBIT AI",
+          role: "ADVANCED TELEMETRY // AUTONOMOUS AI SYSTEM",
+          bg: "radial-gradient(circle at 50% 40%, #0369a1 0%, #0c1b33 65%, #020617 100%)",
+          getSvg(emotion = "neutral") {
+            return generateOrbitEmotionSvg(emotion);
+          },
+        },
+        atlas: {
+          name: "COMMANDER ATLAS",
+          role: "DIRECTOR // EARTH DETECTIVE AGENCY",
+          bg: "radial-gradient(circle at 50% 35%, #78350f 0%, #1e1b4b 65%, #050414 100%)",
+          getSvg() {
+            return `<svg viewBox="0 0 160 180" class="w-full h-full">
+            <path d="M15,180 L28,124 C40,110 120,110 132,124 L145,180 Z" fill="#0f172a" stroke="#334155" stroke-width="2"/>
+            <path d="M22,126 L42,122 L38,136 L18,138 Z" fill="#f59e0b" stroke="#fef08a" stroke-width="1.5"/>
+            <path d="M138,126 L118,122 L122,136 L142,138 Z" fill="#f59e0b" stroke="#fef08a" stroke-width="1.5"/>
+            <path d="M58,118 L80,154 L102,118 Z" fill="#f59e0b"/><path d="M64,124 L80,150 L96,124 Z" fill="#1e293b"/>
+            <path d="M66,98 L66,122 L94,122 L94,98 Z" fill="#fed7aa"/>
+            <path d="M48,56 C48,94 66,114 80,114 C94,114 112,94 112,56 C112,36 96,30 80,30 C64,30 48,36 48,56 Z" fill="#ffedd5"/>
+            <ellipse cx="65" cy="68" rx="5" ry="7" fill="#1e293b"/><circle cx="65" cy="68" rx="3" ry="5" fill="#38bdf8"/>
+            <path d="M54,58 L74,62" stroke="#0f172a" stroke-width="3.5" stroke-linecap="round"/>
+            <ellipse cx="95" cy="68" rx="5" ry="7" fill="#1e293b"/><circle cx="95" cy="68" rx="3" ry="5" fill="#38bdf8"/>
+            <path d="M106,58 L86,62" stroke="#0f172a" stroke-width="3.5" stroke-linecap="round"/>
+            <path d="M72,96 L88,96" stroke="#7c2d12" stroke-width="2.5" stroke-linecap="round"/>
+            <path d="M44,56 C44,24 60,14 80,14 C100,14 116,24 116,56 C108,36 94,32 80,34 C66,32 52,36 44,56 Z" fill="#cbd5e1"/>
+          </svg>`;
+          },
+        },
+        player: {
+          name: "STEVE",
+          role: "JUNIOR DETECTIVE // FIELD INVESTIGATOR",
+          bg: "radial-gradient(circle at 50% 35%, #0284c7 0%, #033f63 65%, #021422 100%)",
+          getSvg() {
+            return `<img src="Char/Main Player/user.png" style="width:100%; height:100%; object-fit:cover; object-position:top center; display:block;" />`;
+          },
+        },
+        archivist: {
+          name: "THE ARCHIVIST",
+          role: "SYNTHESIS SPECIALIST // EVIDENCE VAULT",
+          bg: "radial-gradient(circle at 50% 35%, #7e22ce 0%, #3b0764 65%, #0e021a 100%)",
+          getSvg() {
+            return `<svg viewBox="0 0 160 180" class="w-full h-full">
+            <path d="M25,180 L35,125 C45,115 115,115 125,125 L135,180 Z" fill="#3b0764" stroke="#c084fc" stroke-width="2"/>
+            <path d="M50,60 C50,94 66,116 80,116 C94,116 110,94 110,60 Z" fill="#f5d0fe"/>
+            <path d="M46,58 C46,28 60,18 80,18 C100,18 114,28 114,58 Z" fill="#a855f7"/>
+            <circle cx="66" cy="72" r="10" fill="none" stroke="#22d3ee" stroke-width="2.5"/>
+            <ellipse cx="66" cy="72" rx="5" ry="6" fill="#06b6d4"/><ellipse cx="94" cy="72" rx="5" ry="6" fill="#4c1d95"/>
+          </svg>`;
+          },
+        },
+        crew_red: {
+          name: "LT. VEGA",
+          role: "BRIDGE TELEMETRY // SATELLITE COMMUNICATIONS",
+          bg: "radial-gradient(circle at 50% 35%, #991b1b 0%, #450a0a 65%, #150303 100%)",
+          getSvg() {
+            return `<svg viewBox="0 0 160 180" class="w-full h-full">
+            <path d="M25,180 L35,126 C45,114 115,114 125,126 L135,180 Z" fill="#991b1b" stroke="#f87171" stroke-width="2"/>
+            <path d="M50,60 C50,94 66,116 80,116 C94,116 110,94 110,60 Z" fill="#fde68a"/>
+            <path d="M46,58 C46,28 60,18 80,18 C100,18 114,28 114,58 Z" fill="#ef4444"/>
+            <ellipse cx="66" cy="72" rx="5" ry="6" fill="#0f172a"/><ellipse cx="94" cy="72" rx="5" ry="6" fill="#0f172a"/>
+          </svg>`;
+          },
+        },
+        crew_blue: {
+          name: "ENSIGN KOVAL",
+          role: "STATION OPERATIONS // ELEVATOR SYSTEMS",
+          bg: "radial-gradient(circle at 50% 35%, #1e40af 0%, #172554 65%, #050b1d 100%)",
+          getSvg() {
+            return `<svg viewBox="0 0 160 180" class="w-full h-full">
+            <path d="M25,180 L35,126 C45,114 115,114 125,126 L135,180 Z" fill="#1e3a8a" stroke="#60a5fa" stroke-width="2"/>
+            <path d="M50,60 C50,94 66,116 80,116 C94,116 110,94 110,60 Z" fill="#fed7aa"/>
+            <path d="M46,58 C46,28 60,18 80,18 C100,18 114,28 114,58 Z" fill="#3b82f6"/>
+            <ellipse cx="66" cy="72" rx="5" ry="6" fill="#0f172a"/><ellipse cx="94" cy="72" rx="5" ry="6" fill="#0f172a"/>
+          </svg>`;
+          },
+        },
+      };
+
+      /*************************************************************************
+       * 3. MULTI-ROOM OPEN WORLD MAP & PROPS (Images 3, 4, 5 Style)
+       *************************************************************************/
+      const TILE = 40;
+
+      function buildEDAStationMap() {
+        const W = 40,
+          H = 30;
+        const grid = Array.from({ length: H }, () => Array(W).fill(0));
+
+        const fillRect = (x1, y1, w, h, val) => {
+          for (let y = y1; y < y1 + h; y++)
+            for (let x = x1; x < x1 + w; x++)
+              if (y >= 0 && y < H && x >= 0 && x < W) grid[y][x] = val;
+        };
+        const wallBox = (x1, y1, w, h, floorVal) => {
+          fillRect(x1, y1, w, h, 1);
+          fillRect(x1 + 1, y1 + 2, w - 2, h - 3, floorVal);
+        };
+
+        // NORTH COMMAND BRIDGE (Image 3)
+        wallBox(8, 3, 24, 12, 2);
+        fillRect(12, 8, 16, 3, 3);
+        fillRect(18, 11, 4, 3, 3);
+
+        // CENTRAL CORRIDOR (Image 4/5)
+        wallBox(16, 14, 8, 14, 2);
+        fillRect(18, 15, 4, 12, 3);
+
+        // Sliding doors
+        grid[14][19] = 6;
+        grid[14][20] = 6; // Bridge to corridor
+
+        // WEST WING QUARTERS (Image 4)
+        wallBox(3, 14, 14, 13, 4);
+        grid[20][16] = 6;
+        grid[21][16] = 6; // Quarters to corridor
+
+        // EAST WING COMMONS (Image 5)
+        wallBox(23, 14, 14, 13, 5);
+        grid[20][23] = 6;
+        grid[21][23] = 6; // Corridor to commons
+
+        return {
+          id: "eda_station",
+          name: "EDA STATION // MULTI-ROOM COMPLEX",
+          altitude: "0.0 KM (SURFACE & COMMAND)",
+          skyType: "space_earth",
+          W,
+          H,
+          grid,
+          spawnX: 9 * TILE,
+          spawnY: 20 * TILE,
+          floorLabels: [
+            { x: 19.5 * TILE, y: 13.7 * TILE, text: "Bridge ↑" },
+            { x: 11.5 * TILE, y: 19.5 * TILE, text: "← Quarters / Home Lab" },
+            { x: 27.5 * TILE, y: 19.5 * TILE, text: "Commons & Lab →" },
+            {
+              x: 20.0 * TILE,
+              y: 6.2 * TILE,
+              text: "🛗 Atmospheric Elevator ↑",
+            },
+          ],
+          props: [
+            {
+              id: "bed_1",
+              type: "bed",
+              x: 5 * TILE,
+              y: 16 * TILE,
+              w: 2 * TILE,
+              h: 2.2 * TILE,
+              solid: true,
+              label: "Detective's Bunk",
+            },
+            {
+              id: "home_term",
+              type: "wide_console",
+              x: 9 * TILE,
+              y: 16 * TILE,
+              w: 3.5 * TILE,
+              h: 1.6 * TILE,
+              solid: true,
+              label: "Home Satellite Terminal [STAGE 1]",
+              action: "prologue_signal",
+            },
+            {
+              id: "crystal_1",
+              type: "crystal",
+              x: 14 * TILE,
+              y: 16.2 * TILE,
+              w: 1 * TILE,
+              h: 1.5 * TILE,
+              solid: true,
+              label: "Telemetry Resonator",
+              action: "crystal_info",
+            },
+            {
+              id: "desk_weather",
+              type: "lab_desk",
+              x: 6 * TILE,
+              y: 22.5 * TILE,
+              w: 3 * TILE,
+              h: 1.6 * TILE,
+              solid: true,
+              label: "Weather Signal Scanner (TWSS)",
+              action: "inst_trop_scanner",
+            },
+            {
+              id: "desk_airs",
+              type: "lab_desk",
+              x: 11 * TILE,
+              y: 22.5 * TILE,
+              w: 3 * TILE,
+              h: 1.6 * TILE,
+              solid: true,
+              label: "AIRS Vertical Profile Console",
+              action: "inst_trop_profile",
+            },
+            {
+              id: "bio_planter",
+              type: "planter",
+              x: 18.5 * TILE,
+              y: 19 * TILE,
+              w: 3 * TILE,
+              h: 2.2 * TILE,
+              solid: true,
+              label: "Biosphere O2/CO2 Planter",
+              action: "planter_info",
+            },
+            {
+              id: "planet_screen",
+              type: "planet_screen",
+              x: 17.5 * TILE,
+              y: 3.2 * TILE,
+              w: 5 * TILE,
+              h: 2.3 * TILE,
+              solid: false,
+              label: "Global Atmospheric Viewscreen",
+              action: "bridge_screen",
+            },
+            {
+              id: "bridge_con_left",
+              type: "wide_console",
+              x: 10.5 * TILE,
+              y: 5.2 * TILE,
+              w: 5.5 * TILE,
+              h: 1.7 * TILE,
+              solid: true,
+              label: "Troposphere GPM/MODIS Array",
+              action: "inst_trop_scanner",
+            },
+            {
+              id: "bridge_con_right",
+              type: "wide_console",
+              x: 24 * TILE,
+              y: 5.2 * TILE,
+              w: 5.5 * TILE,
+              h: 1.7 * TILE,
+              solid: true,
+              label: "Atmospheric Elevator Airlock",
+              action: "open_elevator",
+            },
+            {
+              id: "holo_radar",
+              type: "holo_radar",
+              x: 18.2 * TILE,
+              y: 7.2 * TILE,
+              w: 3.6 * TILE,
+              h: 2.6 * TILE,
+              solid: true,
+              label: "Project ORBIT Central Radar",
+              action: "holo_info",
+            },
+            {
+              id: "u_console_left",
+              type: "u_console",
+              x: 10.5 * TILE,
+              y: 11 * TILE,
+              w: 4.5 * TILE,
+              h: 2.2 * TILE,
+              solid: true,
+              label: "AIRS Profile Station",
+              action: "inst_trop_profile",
+            },
+            {
+              id: "u_console_right",
+              type: "u_console",
+              x: 24.5 * TILE,
+              y: 11 * TILE,
+              w: 4.5 * TILE,
+              h: 2.2 * TILE,
+              solid: true,
+              label: "Detective Evidence Archive",
+              action: "open_notebook",
+            },
+          ],
+          npcs: [
+            {
+              id: "atlas",
+              charKey: "atlas",
+              x: 20 * TILE,
+              y: 10.3 * TILE,
+              dir: "down",
+              label: "Commander Atlas",
+              action: "talk_atlas",
+            },
+            {
+              id: "nova",
+              charKey: "nova",
+              x: 15.5 * TILE,
+              y: 8.8 * TILE,
+              dir: "right",
+              label: "Dr. Nova",
+              action: "talk_nova",
+            },
+            {
+              id: "orbit",
+              charKey: "orbit",
+              x: 23.2 * TILE,
+              y: 8.6 * TILE,
+              dir: "down",
+              label: "ORBIT AI",
+              action: "talk_orbit",
+            },
+            {
+              id: "crew1",
+              charKey: "crew_red",
+              x: 12.5 * TILE,
+              y: 7.4 * TILE,
+              dir: "up",
+              label: "Lt. Vega",
+              action: "talk_vega",
+            },
+            {
+              id: "crew2",
+              charKey: "crew_blue",
+              x: 26.5 * TILE,
+              y: 10.6 * TILE,
+              dir: "down",
+              label: "Ensign Koval",
+              action: "talk_koval",
+            },
+          ],
+        };
+      }
+
+      function buildLayerStationMap(
+        layerKey,
+        title,
+        altText,
+        skyType,
+        npcKey,
+        npcName,
+        npcAction,
+        inst1Label,
+        inst1Action,
+        inst2Label,
+        inst2Action,
+      ) {
+        const W = 28,
+          H = 20;
+        const grid = Array.from({ length: H }, () => Array(W).fill(0));
+        for (let y = 4; y < 17; y++) {
+          for (let x = 4; x < 24; x++) {
+            grid[y][x] =
+              y === 4 || y === 5 || y === 16 || x === 4 || x === 23 ? 1 : 2;
+          }
+        }
+        for (let y = 9; y < 13; y++)
+          for (let x = 9; x < 19; x++) grid[y][x] = 3;
+
+        return {
+          id: layerKey,
+          name: title,
+          altitude: altText,
+          skyType,
+          W,
+          H,
+          grid,
+          spawnX: 14 * TILE,
+          spawnY: 13 * TILE,
+          floorLabels: [
+            { x: 14 * TILE, y: 14.8 * TILE, text: "🛗 Elevator Airlock" },
+            { x: 14 * TILE, y: 8.4 * TILE, text: "Observation Deck ↑" },
+          ],
+          props: [
+            {
+              id: "planet_scr",
+              type: "planet_screen",
+              x: 11.5 * TILE,
+              y: 4.2 * TILE,
+              w: 5 * TILE,
+              h: 2.2 * TILE,
+              solid: false,
+              label: title + " Viewport",
+              action: inst1Action,
+            },
+            {
+              id: "con_left",
+              type: "wide_console",
+              x: 6 * TILE,
+              y: 6.2 * TILE,
+              w: 5 * TILE,
+              h: 1.7 * TILE,
+              solid: true,
+              label: inst1Label,
+              action: inst1Action,
+            },
+            {
+              id: "con_right",
+              type: "wide_console",
+              x: 17 * TILE,
+              y: 6.2 * TILE,
+              w: 5 * TILE,
+              h: 1.7 * TILE,
+              solid: true,
+              label: inst2Label,
+              action: inst2Action,
+            },
+            {
+              id: "holo_mid",
+              type: "holo_radar",
+              x: 12.2 * TILE,
+              y: 9.2 * TILE,
+              w: 3.6 * TILE,
+              h: 2.5 * TILE,
+              solid: true,
+              label: "Layer Telemetry Core",
+              action: inst1Action,
+            },
+            {
+              id: "elev_pad",
+              type: "u_console",
+              x: 11.8 * TILE,
+              y: 13.5 * TILE,
+              w: 4.4 * TILE,
+              h: 2 * TILE,
+              solid: true,
+              label: "Atmospheric Elevator Control",
+              action: "open_elevator",
+            },
+          ],
+          npcs: [
+            {
+              id: "layer_npc",
+              charKey: npcKey,
+              x: 10 * TILE,
+              y: 10.5 * TILE,
+              dir: "down",
+              label: npcName,
+              action: npcAction,
+            },
+            {
+              id: "layer_orbit",
+              charKey: "orbit",
+              x: 18 * TILE,
+              y: 10.5 * TILE,
+              dir: "down",
+              label: "ORBIT AI",
+              action: "talk_orbit",
+            },
+          ],
+        };
+      }
+
+      function buildExosphereStationMap() {
+        const W = 28,
+          H = 29;
+        const grid = Array.from({ length: H }, () => Array(W).fill(0));
+
+        const fillRect = (x1, y1, w, h, val) => {
+          for (let y = y1; y < y1 + h; y++)
+            for (let x = x1; x < x1 + w; x++)
+              if (y >= 0 && y < H && x >= 0 && x < W) grid[y][x] = val;
+        };
+        const wallBox = (x1, y1, w, h, floorVal) => {
+          fillRect(x1, y1, w, h, 1);
+          fillRect(x1 + 1, y1 + 2, w - 2, h - 3, floorVal);
+        };
+
+        // ROOM 1 (NORTH): CENTRAL INVESTIGATION VAULT (Evidence Wall & Final Report)
+        wallBox(4, 3, 20, 12, 4);
+        fillRect(9, 8, 10, 4, 3);
+
+        // ROOM 2 (SOUTH): EXOSPHERE OBSERVATION DECK (Geocorona & Exobase Scanners)
+        wallBox(4, 15, 20, 12, 2);
+        fillRect(9, 20, 10, 3, 3);
+
+        // Sliding Blast Door connecting South Observation Deck to North Investigation Vault
+        grid[14][13] = 6;
+        grid[14][14] = 6;
+        grid[15][13] = 6;
+        grid[15][14] = 6;
+        grid[16][13] = 6;
+        grid[16][14] = 6;
+
+        return {
+          id: "exosphere",
+          name: "LAYER 5 // EXOSPHERE TWO-ROOM COMPLEX",
+          altitude: "1,250 KM (EXOSPHERE)",
+          skyType: "exosphere",
+          W,
+          H,
+          grid,
+          spawnX: 14 * TILE,
+          spawnY: 22.8 * TILE,
+          floorLabels: [
+            { x: 14 * TILE, y: 25.5 * TILE, text: "🛗 Elevator Airlock" },
+            { x: 8.5 * TILE, y: 19.3 * TILE, text: "🌍 Geocorona Scanner ↑" },
+            { x: 19.5 * TILE, y: 19.3 * TILE, text: "🔭 Exobase Analyzer ↑" },
+            {
+              x: 14 * TILE,
+              y: 17.5 * TILE,
+              text: "↑ Central Investigation Vault ↑",
+            },
+            { x: 8.5 * TILE, y: 7.8 * TILE, text: "🕸️ Evidence Wall ↑" },
+            { x: 19.5 * TILE, y: 7.8 * TILE, text: "📋 Final Report ↑" },
+          ],
+          props: [
+            // --- SOUTH ROOM: EXOSPHERE OBSERVATION DECK ---
+            {
+              id: "exo_con_left",
+              type: "wide_console",
+              x: 6 * TILE,
+              y: 17.2 * TILE,
+              w: 5 * TILE,
+              h: 1.7 * TILE,
+              solid: true,
+              label: "Geocorona Lyman-Alpha Scanner (5A)",
+              action: "inst_exo_geocorona",
+            },
+            {
+              id: "exo_con_right",
+              type: "wide_console",
+              x: 17 * TILE,
+              y: 17.2 * TILE,
+              w: 5 * TILE,
+              h: 1.7 * TILE,
+              solid: true,
+              label: "Exobase Ballistic Escape Analyzer (5B)",
+              action: "inst_exo_ballistic",
+            },
+            {
+              id: "exo_holo_obs",
+              type: "holo_radar",
+              x: 12.2 * TILE,
+              y: 19.8 * TILE,
+              w: 3.6 * TILE,
+              h: 2.4 * TILE,
+              solid: true,
+              label: "Geocorona Telemetry Core",
+              action: "inst_exo_geocorona",
+            },
+            {
+              id: "elev_pad",
+              type: "u_console",
+              x: 11.8 * TILE,
+              y: 23.6 * TILE,
+              w: 4.4 * TILE,
+              h: 2 * TILE,
+              solid: true,
+              label: "Atmospheric Elevator Control",
+              action: "open_elevator",
+            },
+
+            // --- NORTH ROOM: CENTRAL INVESTIGATION VAULT ---
+            {
+              id: "planet_scr",
+              type: "planet_screen",
+              x: 11.5 * TILE,
+              y: 3.2 * TILE,
+              w: 5 * TILE,
+              h: 2.2 * TILE,
+              solid: false,
+              label: "Deep Space Geocorona Viewport",
+              action: "inst_evidence_wall",
+            },
+            {
+              id: "vault_wall_con",
+              type: "wide_console",
+              x: 6 * TILE,
+              y: 5.5 * TILE,
+              w: 5 * TILE,
+              h: 1.7 * TILE,
+              solid: true,
+              label: "The Evidence Wall (Case 05)",
+              action: "inst_evidence_wall",
+            },
+            {
+              id: "vault_report_con",
+              type: "wide_console",
+              x: 17 * TILE,
+              y: 5.5 * TILE,
+              w: 5 * TILE,
+              h: 1.7 * TILE,
+              solid: true,
+              label: "Final Report Terminal (Stage 8)",
+              action: "inst_final_report",
+            },
+            {
+              id: "vault_holo_mid",
+              type: "holo_radar",
+              x: 12.2 * TILE,
+              y: 8.2 * TILE,
+              w: 3.6 * TILE,
+              h: 2.4 * TILE,
+              solid: true,
+              label: "Earth System Synthesis Core",
+              action: "inst_evidence_wall",
+            },
+            {
+              id: "vault_crys_l",
+              type: "crystal",
+              x: 5.2 * TILE,
+              y: 11.5 * TILE,
+              w: 1 * TILE,
+              h: 1.5 * TILE,
+              solid: true,
+              label: "Archive Data Crystal",
+              action: "crystal_info",
+            },
+            {
+              id: "vault_crys_r",
+              type: "crystal",
+              x: 21.8 * TILE,
+              y: 11.5 * TILE,
+              w: 1 * TILE,
+              h: 1.5 * TILE,
+              solid: true,
+              label: "Archive Data Crystal",
+              action: "crystal_info",
+            },
+          ],
+          npcs: [
+            // South Room Observation Deck Crew
+            {
+              id: "exo_nova",
+              charKey: "nova",
+              x: 8.8 * TILE,
+              y: 21.2 * TILE,
+              dir: "down",
+              label: "Dr. Nova",
+              action: "talk_exo_nova",
+            },
+            {
+              id: "exo_orbit",
+              charKey: "orbit",
+              x: 19.2 * TILE,
+              y: 21.2 * TILE,
+              dir: "down",
+              label: "ORBIT AI",
+              action: "talk_orbit",
+            },
+            // North Room Investigation Vault Crew
+            {
+              id: "layer_npc",
+              charKey: "archivist",
+              x: 9.2 * TILE,
+              y: 9.8 * TILE,
+              dir: "down",
+              label: "The Archivist",
+              action: "talk_archivist",
+            },
+            {
+              id: "layer_atlas",
+              charKey: "atlas",
+              x: 18.8 * TILE,
+              y: 9.8 * TILE,
+              dir: "down",
+              label: "Commander Atlas",
+              action: "talk_exo_atlas",
+            },
+          ],
+        };
+      }
+
+      const MAPS = {
+        eda_station: buildEDAStationMap(),
+        troposphere: buildLayerStationMap(
+          "troposphere",
+          "LAYER 1 // TROPOSPHERE SKY-STATION",
+          "8.5 KM (TROPOSPHERE)",
+          "troposphere",
+          "nova",
+          "Dr. Nova",
+          "talk_nova",
+          "Weather Signal Scanner (TWSS)",
+          "inst_trop_scanner",
+          "AIRS Vertical Profile Lab",
+          "inst_trop_profile",
+        ),
+        stratosphere: buildLayerStationMap(
+          "stratosphere",
+          "LAYER 2 // STRATOSPHERE OZONE LAB",
+          "28.0 KM (STRATOSPHERE)",
+          "stratosphere",
+          "nova",
+          "Dr. Nova",
+          "talk_strat_nova",
+          "Ozone Observation Console (OMI/OMPS)",
+          "inst_strat_console",
+          "Mann-Kendall Trend Analysis Lab",
+          "inst_strat_lab",
+        ),
+        mesosphere: buildLayerStationMap(
+          "mesosphere",
+          "LAYER 3 // MESOSPHERE OBSERVATORY",
+          "76.0 KM (MESOSPHERE)",
+          "mesosphere",
+          "crew_blue",
+          "Ensign Koval",
+          "talk_meso_koval",
+          "Signal Receiver & Reconstructor",
+          "inst_meso_receiver",
+          "Missing Data & Mesopause Profile",
+          "inst_meso_profile",
+        ),
+        thermosphere: buildLayerStationMap(
+          "thermosphere",
+          "LAYER 4 // THERMOSPHERE ORBITAL DECK",
+          "340 KM (THERMOSPHERE)",
+          "thermosphere",
+          "nova",
+          "Dr. Nova",
+          "talk_thermo_nova",
+          "Satellite Observation Tracker (TIMED/GOLD)",
+          "inst_thermo_tracker",
+          "Aurora & Signal Source Comparator",
+          "inst_thermo_aurora",
+        ),
+        exosphere: buildExosphereStationMap(),
+      };
+
+      /*************************************************************************
+       * 4. GAME STATE & MOVEMENT
+       *************************************************************************/
+      const state = {
+        currentMap: "eda_station",
+        prologueDone: false,
+        tropScannerDone: false,
+        tropProfileDone: false,
+        // Phase 3 Layer Sub-Tasks & Interactive Settings
+        stratConsoleDone: false,
+        stratLabDone: false,
+        stratDatasetKey: "global_ozone",
+        stratStartYear: 1979,
+        stratEndYear: 2025,
+        mesoReceiverDone: false,
+        mesoProfileDone: false,
+        mesoGain: 80,
+        mesoWindowYears: 20,
+        mesoConclusion: "coverage_limitation",
+        thermoTrackerDone: false,
+        thermoAuroraDone: false,
+        thermoOrbitAlt: 340,
+        thermoSolarActivity: 65,
+        thermoComparisonChoice: "coupled_cooling",
+        // Phase 4 Exosphere, Evidence Wall & Final Report State
+        exoAltitude: 1250,
+        exoTempK: 950,
+        exoScannerDone: false,
+        exoBallisticDone: false,
+        wallConnections: {
+          link1_trop_strat: "supporting_radiative",
+          link2_strat_meso: "insufficient_coverage",
+          link3_meso_thermo: "supporting_contraction",
+        },
+        wallVerified: false,
+        reportHypothesis: "coupled_radiative_system",
+        reportLimitation: "meso_gaps_and_solar_cycle",
+        reportConfidence: "high_verified",
+        reportCustomNote:
+          "Lower-atmosphere greenhouse warming (+1.18°C) and moisture growth (+7.8%/dec) are physically coupled to middle/upper-atmosphere radiative cooling and contraction across Earth's interconnected system.",
+        reportSubmitted: false,
+        cards: {
+          troposphere: null,
+          stratosphere: null,
+          mesosphere: null,
+          thermosphere: null,
+          exosphere: null,
+        },
+        tropRegionIdx: 0,
+        tropBandwidth: 85,
+        airsAlt: 6.0,
+      };
+
+      const player = {
+        x: 9 * TILE,
+        y: 20 * TILE,
+        dir: "down",
+        frame: 0,
+        speed: 3.8,
+        targetX: null,
+        targetY: null,
+      };
+
+      const keys = {};
+      let padVec = { dx: 0, dy: 0 };
+      function setPad(dx, dy) {
+        padVec = { dx, dy };
+        player.targetX = null;
+        player.targetY = null;
+      }
+
+      window.addEventListener("keydown", (e) => {
+        keys[e.key.toLowerCase()] = true;
+        keys[e.key] = true;
+        if ([" ", "e", "E", "Enter"].includes(e.key)) {
+          const dlg = document.getElementById("rpgDialogueBox");
+          if (dlg.classList.contains("active")) {
+            e.preventDefault();
+            nextDialogueLine();
+          } else if (
+            !document
+              .getElementById("rpgModalBackdrop")
+              .classList.contains("active")
+          ) {
+            e.preventDefault();
+            triggerInteract();
+          }
+        } else if (e.key === "Escape") {
+          closeModal();
+        }
+      });
+      window.addEventListener("keyup", (e) => {
+        keys[e.key.toLowerCase()] = false;
+        keys[e.key] = false;
+      });
+
+      const canvas = document.getElementById("gameCanvas");
+      const ctx = canvas.getContext("2d");
+
+      canvas.addEventListener("click", (e) => {
+        if (
+          document.getElementById("rpgDialogueBox").classList.contains("active")
+        )
+          return;
+        const rect = canvas.getBoundingClientRect();
+        const map = MAPS[state.currentMap];
+        const camX = player.x - canvas.width / 2;
+        const camY = player.y - canvas.height / 2;
+        player.targetX = e.clientX - rect.left + camX;
+        player.targetY = e.clientY - rect.top + camY;
+      });
+
+      function isSolidAt(map, wx, wy) {
+        const tx = Math.floor(wx / TILE),
+          ty = Math.floor(wy / TILE);
+        if (ty < 0 || ty >= map.H || tx < 0 || tx >= map.W) return true;
+        const tile = map.grid[ty][tx];
+        if (tile === 0 || tile === 1) return true;
+        for (const p of map.props) {
+          if (!p.solid) continue;
+          if (
+            wx > p.x + 6 &&
+            wx < p.x + p.w - 6 &&
+            wy > p.y + 8 &&
+            wy < p.y + p.h - 4
+          )
+            return true;
+        }
+        return false;
+      }
+
+      function updatePhysics() {
+        if (document.getElementById("titleScreen").style.display !== "none")
+          return;
+        if (
+          document.getElementById("rpgDialogueBox").classList.contains("active")
+        )
+          return;
+        if (
+          document
+            .getElementById("rpgModalBackdrop")
+            .classList.contains("active")
+        )
+          return;
+
+        let dx = padVec.dx,
+          dy = padVec.dy;
+        if (keys["w"] || keys["ArrowUp"]) dy -= 1;
+        if (keys["s"] || keys["ArrowDown"]) dy += 1;
+        if (keys["a"] || keys["ArrowLeft"]) dx -= 1;
+        if (keys["d"] || keys["ArrowRight"]) dx += 1;
+
+        const map = MAPS[state.currentMap];
+
+        if (dx !== 0 || dy !== 0) {
+          player.targetX = null;
+          player.targetY = null;
+          const len = Math.hypot(dx, dy);
+          const vx = (dx / len) * player.speed;
+          const vy = (dy / len) * player.speed;
+          if (Math.abs(dx) >= Math.abs(dy))
+            player.dir = dx > 0 ? "right" : "left";
+          else player.dir = dy > 0 ? "down" : "up";
+
+          if (!isSolidAt(map, player.x + vx, player.y)) player.x += vx;
+          if (!isSolidAt(map, player.x, player.y + vy)) player.y += vy;
+          player.frame += 0.32;
+        } else if (player.targetX !== null && player.targetY !== null) {
+          const dist = Math.hypot(
+            player.targetX - player.x,
+            player.targetY - player.y,
+          );
+          if (dist > 6) {
+            const vx = ((player.targetX - player.x) / dist) * player.speed;
+            const vy = ((player.targetY - player.y) / dist) * player.speed;
+            if (Math.abs(vx) >= Math.abs(vy))
+              player.dir = vx > 0 ? "right" : "left";
+            else player.dir = vy > 0 ? "down" : "up";
+            let moved = false;
+            if (!isSolidAt(map, player.x + vx, player.y)) {
+              player.x += vx;
+              moved = true;
+            }
+            if (!isSolidAt(map, player.x, player.y + vy)) {
+              player.y += vy;
+              moved = true;
+            }
+            if (!moved) {
+              player.targetX = null;
+              player.targetY = null;
+            }
+            player.frame += 0.32;
+          } else {
+            player.targetX = null;
+            player.targetY = null;
+            player.frame = 0;
+          }
+        } else {
+          player.frame = 0;
+        }
+      }
+
+      /*************************************************************************
+       * 5. ENHANCED HUMANOID PIXEL SPRITE ENGINE
+       *************************************************************************/
+      const SPRITE_PALETTES = {
+        player: {
+          hair: "#f59e0b",
+          coat: "#0284c7",
+          trim: "#38bdf8",
+          skin: "#fde68a",
+          pants: "#0f172a",
+        },
+        atlas: {
+          hair: "#cbd5e1",
+          coat: "#1e293b",
+          trim: "#f59e0b",
+          skin: "#fed7aa",
+          pants: "#020617",
+        },
+        nova: {
+          hair: "#22d3ee",
+          coat: "#ffffff",
+          trim: "#06b6d4",
+          skin: "#fef08a",
+          pants: "#1e293b",
+        },
+        orbit: { isBot: true },
+        archivist: {
+          hair: "#c084fc",
+          coat: "#3b0764",
+          trim: "#a855f7",
+          skin: "#f5d0fe",
+          pants: "#1e1b4b",
+        },
+        crew_red: {
+          hair: "#ef4444",
+          coat: "#991b1b",
+          trim: "#f87171",
+          skin: "#fde68a",
+          pants: "#0f172a",
+        },
+        crew_blue: {
+          hair: "#60a5fa",
+          coat: "#1e3a8a",
+          trim: "#93c5fd",
+          skin: "#fed7aa",
+          pants: "#0f172a",
+        },
+      };
+
+      function drawHumanoidSprite(
+        ctx,
+        cx,
+        cy,
+        charKey,
+        dir = "down",
+        frame = 0,
+        scale = 2,
+      ) {
+        const pal = SPRITE_PALETTES[charKey] || SPRITE_PALETTES.player;
+        ctx.save();
+        ctx.translate(Math.floor(cx), Math.floor(cy));
+
+        // Floor Shadow
+        ctx.fillStyle = "rgba(0, 0, 0, 0.45)";
+        ctx.beginPath();
+        ctx.ellipse(0, 14 * scale, 7 * scale, 3.5 * scale, 0, 0, Math.PI * 2);
+        ctx.fill();
+
+        const p = (x, y, w, h, col) => {
+          ctx.fillStyle = col;
+          ctx.fillRect(
+            Math.floor(x * scale),
+            Math.floor(y * scale),
+            Math.ceil(w * scale),
+            Math.ceil(h * scale),
+          );
+        };
+
+        if (pal.isBot) {
+          // Floating ORBIT AI Probe
+          const hover = Math.sin(Date.now() * 0.006) * 3;
+          ctx.translate(0, hover);
+          p(-6, -9, 12, 12, "#0284c7");
+          p(-5, -8, 10, 10, "#38bdf8");
+          p(-3, -6, 6, 6, "#ffffff");
+          p(-8, -4, 2, 6, "#cbd5e1");
+          p(6, -4, 2, 6, "#cbd5e1");
+          p(-4, 4, 2, 4, "#94a3b8");
+          p(2, 4, 2, 4, "#94a3b8");
+          ctx.restore();
+          return;
+        }
+
+        const step = Math.sin(frame * 0.45);
+        const leftLegY = Math.abs(step) > 0.2 ? (step > 0 ? -1.5 : 1.5) : 0;
+        const rightLegY = -leftLegY;
+
+        // Legs & Boots
+        p(-4, 6 + leftLegY, 3, 7, pal.pants);
+        p(1, 6 + rightLegY, 3, 7, pal.pants);
+        p(-4, 12 + leftLegY, 3, 2, "#090d16");
+        p(1, 12 + rightLegY, 3, 2, "#090d16");
+
+        // Uniform Torso & Shoulder Trim
+        p(-5, -3, 10, 10, pal.coat);
+        p(-6, -3, 12, 4, pal.trim);
+
+        // Swinging Arms
+        const armOffset = Math.round(step * 1.5);
+        p(-7, -2 + armOffset, 2, 8, pal.coat);
+        p(-7, 5 + armOffset, 2, 2, pal.skin);
+        p(5, -2 - armOffset, 2, 8, pal.coat);
+        p(5, 5 - armOffset, 2, 2, pal.skin);
+
+        // Head & Hair
+        p(-5, -13, 10, 10, pal.skin);
+        p(-6, -15, 12, 4, pal.hair);
+        p(-6, -13, 2, 6, pal.hair);
+        p(4, -13, 2, 6, pal.hair);
+
+        if (charKey === "nova") {
+          p(5, -14, 3, 8, "#06b6d4"); // Ponytail
+        }
+
+        // Directional Eye & Face Details
+        if (dir === "down") {
+          p(-3, -9, 2, 2, "#0f172a");
+          p(1, -9, 2, 2, "#0f172a");
+          p(-3, -10, 2, 1, "#ffffff");
+          p(1, -10, 2, 1, "#ffffff");
+        } else if (dir === "left") {
+          p(-4, -9, 2, 2, "#0f172a");
+        } else if (dir === "right") {
+          p(2, -9, 2, 2, "#0f172a");
+        } else if (dir === "up") {
+          p(-5, -13, 10, 8, pal.hair);
+        }
+
+        ctx.restore();
+      }
+
+      /*************************************************************************
+       * 6. RENDERING ENGINE: TILES, PROPS & SCENERY
+       *************************************************************************/
+      const stars = Array.from({ length: 90 }, () => ({
+        x: Math.random() * 2000,
+        y: Math.random() * 1200,
+        s: Math.random() > 0.7 ? 2 : 1,
+      }));
+
+      function renderWorld() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight - 52;
+
+        const map = MAPS[state.currentMap];
+        const camX = Math.floor(player.x - canvas.width / 2);
+        const camY = Math.floor(player.y - canvas.height / 2);
+
+        drawExteriorBackdrop(map.skyType, camX, camY);
+
+        ctx.save();
+        ctx.translate(-camX, -camY);
+
+        // Tiles
+        for (let y = 0; y < map.H; y++) {
+          for (let x = 0; x < map.W; x++) {
+            const t = map.grid[y][x];
+            if (t === 0) continue;
+            const px = x * TILE,
+              py = y * TILE;
+
+            if (t === 1) {
+              const isTopWall = y === 0 || map.grid[y - 1][x] === 0;
+              ctx.fillStyle = isTopWall ? "#cbd5e1" : "#64748b";
+              ctx.fillRect(px, py, TILE, TILE);
+              ctx.fillStyle = "#475569";
+              ctx.fillRect(px + 2, py + 8, TILE - 4, TILE - 12);
+              ctx.fillStyle = "#00f0ff";
+              ctx.fillRect(px, py + TILE - 4, TILE, 3);
+              if (
+                (x + y) % 5 === 0 &&
+                y < map.H - 1 &&
+                map.grid[y + 1][x] >= 2
+              ) {
+                ctx.fillStyle = "#0f172a";
+                ctx.fillRect(px + 8, py + 10, 24, 18);
+                ctx.fillStyle = "#22c55e";
+                ctx.fillRect(px + 11, py + 14, 18, 4);
+                ctx.fillStyle = "#86efac";
+                ctx.fillRect(px + 13, py + 21, 12, 3);
+              }
+            } else if (t === 2) {
+              ctx.fillStyle = (x + y) % 2 === 0 ? "#b8c4d0" : "#aebac6";
+              ctx.fillRect(px, py, TILE, TILE);
+              ctx.strokeStyle = "#8895a4";
+              ctx.lineWidth = 1;
+              ctx.strokeRect(px + 0.5, py + 0.5, TILE - 1, TILE - 1);
+            } else if (t === 3) {
+              ctx.fillStyle = "#94a3b8";
+              ctx.fillRect(px, py, TILE, TILE);
+              ctx.fillStyle = "#334155";
+              ctx.fillRect(px + 4, py + 4, TILE - 8, TILE - 8);
+              ctx.fillStyle = "#64748b";
+              ctx.fillRect(px + 8, py + 8, 10, 6);
+              ctx.fillRect(px + 22, py + 18, 10, 12);
+              ctx.fillStyle = "#38bdf8";
+              ctx.fillRect(px + 10, py + 24, 8, 2);
+            } else if (t === 4) {
+              ctx.fillStyle = "#525e8c";
+              ctx.fillRect(px, py, TILE, TILE);
+              ctx.fillStyle = "#6875a8";
+              ctx.fillRect(px + 4, py + 4, 14, 14);
+              ctx.fillRect(px + 22, py + 22, 14, 14);
+              ctx.strokeStyle = "#434d75";
+              ctx.strokeRect(px, py, TILE, TILE);
+            } else if (t === 5) {
+              ctx.fillStyle = (x + y) % 2 === 0 ? "#f1f5f9" : "#e2e8f0";
+              ctx.fillRect(px, py, TILE, TILE);
+              ctx.strokeStyle = "#cbd5e1";
+              ctx.strokeRect(px + 0.5, py + 0.5, TILE - 1, TILE - 1);
+            } else if (t === 6) {
+              const d = Math.hypot(player.x - (px + 20), player.y - (py + 20));
+              const openAmt = d < 95 ? Math.min(16, (95 - d) * 0.25) : 0;
+              ctx.fillStyle = "#475569";
+              ctx.fillRect(px, py, TILE, TILE);
+              ctx.fillStyle = "#cbd5e1";
+              ctx.fillRect(px, py + 4, TILE / 2 - openAmt, TILE - 8);
+              ctx.fillRect(
+                px + TILE / 2 + openAmt,
+                py + 4,
+                TILE / 2 - openAmt,
+                TILE - 8,
+              );
+              ctx.fillStyle = "#00f0ff";
+              ctx.fillRect(px, py, TILE, 3);
+            }
+          }
+        }
+
+        // Floor Labels
+        for (const fl of map.floorLabels) {
+          ctx.font = "bold 14px 'Chakra Petch', sans-serif";
+          ctx.textAlign = "center";
+          ctx.fillStyle = "#090d16";
+          ctx.fillText(fl.text, fl.x + 2, fl.y + 2);
+          ctx.fillStyle = "#38bdf8";
+          ctx.fillText(fl.text, fl.x, fl.y);
+        }
+
+        // Props
+        for (const p of map.props) drawSciFiProp(p);
+
+        // Y-Sorted Characters
+        const entities = [
+          ...map.npcs.map((n) => ({ ...n, isPlayer: false })),
+          {
+            x: player.x,
+            y: player.y,
+            dir: player.dir,
+            frame: player.frame,
+            charKey: "player",
+            label: "YOU",
+            isPlayer: true,
+          },
+        ].sort((a, b) => a.y - b.y);
+
+        for (const ent of entities) {
+          drawHumanoidSprite(
+            ctx,
+            ent.x,
+            ent.y,
+            ent.charKey,
+            ent.dir,
+            ent.frame || 0,
+            2,
+          );
+          ctx.font = "bold 12px 'Chakra Petch', sans-serif";
+          ctx.textAlign = "center";
+          ctx.fillStyle = "rgba(9, 13, 22, 0.88)";
+          const tw = ctx.measureText(ent.label).width + 12;
+          ctx.fillRect(ent.x - tw / 2, ent.y - 44, tw, 18);
+          ctx.fillStyle = ent.isPlayer ? "#fde047" : "#67e8f9";
+          ctx.fillText(ent.label, ent.x, ent.y - 31);
+        }
+
+        // Proximity Action Bubble
+        const near = getNearestInteractable();
+        if (near) {
+          const bx = near.x,
+            by = near.y - 54;
+          ctx.font = "bold 13px 'Chakra Petch', sans-serif";
+          const txt = `[E] ${near.label}`;
+          const bw = ctx.measureText(txt).width + 20;
+          ctx.fillStyle = "#0f172a";
+          ctx.strokeStyle = "#fde047";
+          ctx.lineWidth = 2;
+          ctx.fillRect(bx - bw / 2, by - 16, bw, 24);
+          ctx.strokeRect(bx - bw / 2, by - 16, bw, 24);
+          ctx.fillStyle = "#fde047";
+          ctx.textAlign = "center";
+          ctx.fillText(txt, bx, by + 1);
+        }
+
+        ctx.restore();
+      }
+
+      function drawExteriorBackdrop(skyType, camX, camY) {
+        const t = Date.now() * 0.001;
+        if (skyType === "troposphere") {
+          const g = ctx.createLinearGradient(0, 0, 0, canvas.height);
+          g.addColorStop(0, "#0284c7");
+          g.addColorStop(0.65, "#38bdf8");
+          g.addColorStop(1, "#bae6fd");
+          ctx.fillStyle = g;
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
+          // Animated Drifting Cumulus Clouds & Weather Balloon
+          ctx.fillStyle = "rgba(255, 255, 255, 0.78)";
+          for (let i = 0; i < 7; i++) {
+            const cx =
+              ((i * 240 + t * 22 - camX * 0.15) % (canvas.width + 200)) - 100;
+            const cy = 48 + (i % 3) * 42;
+            ctx.beginPath();
+            ctx.arc(cx, cy, 24, 0, Math.PI * 2);
+            ctx.arc(cx + 22, cy - 8, 30, 0, Math.PI * 2);
+            ctx.arc(cx + 46, cy, 22, 0, Math.PI * 2);
+            ctx.fill();
+          }
+          return;
+        } else if (skyType === "stratosphere") {
+          const g = ctx.createLinearGradient(0, 0, 0, canvas.height);
+          g.addColorStop(0, "#050b18");
+          g.addColorStop(0.5, "#1e3a8a");
+          g.addColorStop(1, "#0284c7");
+          ctx.fillStyle = g;
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
+          // Glowing Cyan Ozone Shield Layer & Orbiting Aura/OMPS Satellite
+          ctx.fillStyle = "rgba(34, 211, 238, 0.25)";
+          ctx.fillRect(0, 52, canvas.width, 32);
+          const satX = ((t * 55) % (canvas.width + 120)) - 60;
+          ctx.fillStyle = "#38bdf8";
+          ctx.fillRect(satX - 24, 34, 16, 6);
+          ctx.fillRect(satX + 8, 34, 16, 6);
+          ctx.fillStyle = "#f8fafc";
+          ctx.fillRect(satX - 6, 31, 12, 12);
+        } else if (skyType === "mesosphere") {
+          const g = ctx.createLinearGradient(0, 0, 0, canvas.height);
+          g.addColorStop(0, "#030612");
+          g.addColorStop(0.6, "#1e1b4b");
+          g.addColorStop(1, "#312e81");
+          ctx.fillStyle = g;
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
+          // Streaking Golden Meteors & Noctilucent Ice Clouds
+          const mx = ((t * 220) % (canvas.width + 300)) - 100;
+          const my = 20 + ((t * 85) % 140);
+          ctx.strokeStyle = "#fde047";
+          ctx.lineWidth = 2.5;
+          ctx.beginPath();
+          ctx.moveTo(mx, my);
+          ctx.lineTo(mx - 55, my - 24);
+          ctx.stroke();
+        } else if (skyType === "thermosphere") {
+          const g = ctx.createLinearGradient(0, 0, 0, canvas.height);
+          g.addColorStop(0, "#05020d");
+          g.addColorStop(0.55, "#3b0764");
+          g.addColorStop(1, "#064e3b");
+          ctx.fillStyle = g;
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
+          // Shimmering Aurora Borealis Curtains
+          for (let x = 0; x < canvas.width; x += 28) {
+            const wave = Math.sin(x * 0.015 + t * 2.2) * 20;
+            ctx.fillStyle = "rgba(52, 211, 153, 0.22)";
+            ctx.fillRect(x, 18 + wave, 18, 95);
+          }
+        } else {
+          ctx.fillStyle = "#03060f";
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
+        }
+
+        ctx.fillStyle = "#ffffff";
+        stars.forEach((s) => {
+          const sx = (s.x - camX * 0.2 + 2000) % canvas.width;
+          const sy = (s.y - camY * 0.2 + 1200) % canvas.height;
+          ctx.fillRect(sx, sy, s.s, s.s);
+        });
+
+        const planetGrad = ctx.createRadialGradient(
+          canvas.width / 2,
+          -260,
+          80,
+          canvas.width / 2,
+          -260,
+          430,
+        );
+        planetGrad.addColorStop(0, "#c084fc");
+        planetGrad.addColorStop(0.55, "#3b82f6");
+        planetGrad.addColorStop(
+          0.88,
+          skyType === "exosphere" ? "#f43f5e" : "#22d3ee",
+        );
+        planetGrad.addColorStop(1, "transparent");
+        ctx.fillStyle = planetGrad;
+        ctx.beginPath();
+        ctx.arc(canvas.width / 2, -260, 430, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      function drawSciFiProp(p) {
+        ctx.save();
+        if (p.type === "planet_screen") {
+          ctx.fillStyle = "#090d16";
+          ctx.strokeStyle = "#cbd5e1";
+          ctx.lineWidth = 3;
+          ctx.fillRect(p.x, p.y, p.w, p.h);
+          ctx.strokeRect(p.x, p.y, p.w, p.h);
+          const cx = p.x + p.w / 2,
+            cy = p.y + p.h / 2;
+          ctx.fillStyle = "#1d4ed8";
+          ctx.beginPath();
+          ctx.arc(cx, cy, 32, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.fillStyle = "#22c55e";
+          ctx.fillRect(cx - 14, cy - 12, 16, 10);
+          ctx.fillRect(cx + 2, cy + 2, 14, 12);
+          ctx.strokeStyle = "#00f0ff";
+          ctx.lineWidth = 1.5;
+          ctx.beginPath();
+          ctx.arc(
+            cx,
+            cy,
+            36 + Math.sin(Date.now() * 0.005) * 2,
+            0,
+            Math.PI * 2,
+          );
+          ctx.stroke();
+        } else if (p.type === "wide_console" || p.type === "lab_desk") {
+          ctx.fillStyle = "#e2e8f0";
+          ctx.strokeStyle = "#334155";
+          ctx.lineWidth = 2;
+          ctx.fillRect(p.x, p.y, p.w, p.h);
+          ctx.strokeRect(p.x, p.y, p.w, p.h);
+          ctx.fillStyle = "#0f172a";
+          ctx.fillRect(p.x + 8, p.y + 6, p.w - 16, p.h - 22);
+          ctx.fillStyle = "#0284c7";
+          const cols = 3,
+            mw = (p.w - 28) / cols;
+          for (let i = 0; i < cols; i++) {
+            ctx.fillRect(p.x + 12 + i * (mw + 4), p.y + 9, mw, p.h - 28);
+            ctx.fillStyle = "#38bdf8";
+            ctx.fillRect(p.x + 14 + i * (mw + 4), p.y + 13, mw - 6, 4);
+            ctx.fillStyle = "#0284c7";
+          }
+        } else if (p.type === "holo_radar") {
+          const cx = p.x + p.w / 2,
+            cy = p.y + p.h / 2;
+          ctx.fillStyle = "#1e293b";
+          ctx.strokeStyle = "#38bdf8";
+          ctx.lineWidth = 3;
+          ctx.beginPath();
+          ctx.ellipse(cx, cy, p.w / 2, p.h / 2, 0, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.stroke();
+          ctx.fillStyle = "rgba(14, 165, 233, 0.35)";
+          ctx.beginPath();
+          ctx.ellipse(cx, cy - 4, p.w / 2 - 10, p.h / 2 - 8, 0, 0, Math.PI * 2);
+          ctx.fill();
+        } else if (p.type === "u_console") {
+          ctx.fillStyle = "#64748b";
+          ctx.strokeStyle = "#1e293b";
+          ctx.lineWidth = 2;
+          ctx.fillRect(p.x, p.y, p.w, p.h);
+          ctx.strokeRect(p.x, p.y, p.w, p.h);
+          ctx.fillStyle = "#1d4ed8";
+          ctx.fillRect(p.x + 10, p.y + 10, p.w - 20, p.h - 20);
+        } else if (p.type === "bed") {
+          ctx.fillStyle = "#cbd5e1";
+          ctx.fillRect(p.x, p.y, p.w, p.h);
+          ctx.fillStyle = "#1e293b";
+          ctx.fillRect(p.x + 6, p.y + 18, p.w - 12, p.h - 22);
+          ctx.fillStyle = "#f8fafc";
+          ctx.fillRect(p.x + 10, p.y + 6, p.w - 20, 12);
+        } else if (p.type === "crystal") {
+          ctx.fillStyle = "#cbd5e1";
+          ctx.beginPath();
+          ctx.arc(p.x + 20, p.y + 40, 14, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.fillStyle = "#00f0ff";
+          ctx.beginPath();
+          ctx.moveTo(p.x + 20, p.y + 4);
+          ctx.lineTo(p.x + 30, p.y + 38);
+          ctx.lineTo(p.x + 10, p.y + 38);
+          ctx.closePath();
+          ctx.fill();
+        } else if (p.type === "planter") {
+          ctx.fillStyle = "#e2e8f0";
+          ctx.strokeStyle = "#334155";
+          ctx.lineWidth = 2;
+          ctx.fillRect(p.x, p.y, p.w, p.h);
+          ctx.strokeRect(p.x, p.y, p.w, p.h);
+          ctx.fillStyle = "#0f172a";
+          ctx.fillRect(p.x + 10, p.y + 10, p.w - 20, p.h - 20);
+          ctx.fillStyle = "#06b6d4";
+          ctx.beginPath();
+          ctx.arc(p.x + 32, p.y + 36, 16, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.fillStyle = "#22c55e";
+          ctx.beginPath();
+          ctx.arc(p.x + 85, p.y + 38, 16, 0, Math.PI * 2);
+          ctx.fill();
+        }
+        ctx.restore();
+      }
+
+      /*************************************************************************
+       * 7. RPG MAKER MZ TYPEWRITER DIALOGUE SYSTEM WITH EMOTION SUPPORT
+       *************************************************************************/
+      function getNearestInteractable() {
+        const map = MAPS[state.currentMap];
+        let best = null,
+          minDist = 78;
+        for (const n of map.npcs) {
+          const d = Math.hypot(player.x - n.x, player.y - n.y);
+          if (d < minDist) {
+            minDist = d;
+            best = { x: n.x, y: n.y, label: n.label, action: n.action };
+          }
+        }
+        for (const p of map.props) {
+          if (!p.action) continue;
+          const cx = p.x + p.w / 2,
+            cy = p.y + p.h / 2;
+          const d = Math.hypot(player.x - cx, player.y - cy);
+          if (d < minDist + 18) {
+            minDist = d;
+            best = { x: cx, y: p.y, label: p.label, action: p.action };
+          }
+        }
+        return best;
+      }
+
+      let dlgQueue = [];
+      let dlgIdx = 0;
+      let dlgExtra = null;
+      let typeTimer = null;
+      let isTyping = false;
+      let fullTargetText = "";
+
+      function showRPGDialogue(lines, extraBtn = null) {
+        dlgQueue = lines;
+        dlgIdx = 0;
+        dlgExtra = extraBtn;
+        document.getElementById("rpgDialogueBox").classList.add("active");
+        renderCurrentDialogueLine();
+      }
+
+      function renderCurrentDialogueLine() {
+        const item = dlgQueue[dlgIdx];
+        if (!item) {
+          document.getElementById("rpgDialogueBox").classList.remove("active");
+          return;
+        }
+        const data = HD_PORTRAITS[item.char] || HD_PORTRAITS.player;
+        const emotion = item.emotion || "neutral";
+
+        document.getElementById("dlgSpeakerName").textContent = data.name;
+        document.getElementById("dlgRoleBadge").textContent = data.role;
+
+        // Update Emotion Badge on Nameplate
+        const emoBadge = document.getElementById("dlgEmotionBadge");
+        if (emoBadge) {
+          emoBadge.textContent = emotion.toUpperCase();
+          emoBadge.style.color =
+            emotion === "happy"
+              ? "#4ade80"
+              : emotion === "concerned"
+                ? "#f87171"
+                : "#38bdf8";
+        }
+
+        // Use Local PNG Expression Sheet via CSS Sprites to bypass local CORS blocks
+        const pImage = document.getElementById("portraitImage");
+        const pSvgContainer = document.getElementById("portraitSvgContainer");
+        const sheet = document.getElementById("img_exprSheet");
+        const activeSheetUrl =
+          customSheetBlobUrl || "Char/Dr. Nova and Orbit Expression Sheet.png";
+
+        // Custom single-image character portraits
+        const customCharImages = {
+          atlas: "Char/Commander Atlas/Commander Atlas.png",
+          detective: "Char/Main Player/user.png",
+          player: "Char/Main Player/user.png",
+        };
+
+        if (customCharImages[item.char]) {
+          pImage.style.display = "block";
+          pSvgContainer.style.display = "none";
+          document.getElementById("portraitFrame").style.background = "#000";
+
+          pImage.style.backgroundImage = `url("${customCharImages[item.char]}")`;
+          pImage.style.backgroundSize = "cover";
+          pImage.style.backgroundPosition = "top center";
+          pImage.style.backgroundRepeat = "no-repeat";
+        } else if (
+          (item.char === "nova" || item.char === "orbit") &&
+          sheet &&
+          sheet.complete &&
+          !sheet.failed &&
+          sheet.naturalWidth > 0
+        ) {
+          pImage.style.display = "block";
+          pSvgContainer.style.display = "none";
+          document.getElementById("portraitFrame").style.background = "#000"; // Override BG as image is opaque
+
+          pImage.style.backgroundImage = `url("${activeSheetUrl}")`;
+          pImage.style.backgroundSize = "600% 200%";
+          // Calculate CSS background position based on the 6x2 grid
+          const rowPos = item.char === "nova" ? "0%" : "100%";
+          const colIndex =
+            EMOTION_COLS[emotion] !== undefined ? EMOTION_COLS[emotion] : 0;
+          const colPos = colIndex * 20 + "%"; // 0%, 20%, 40%, 60%, 80%, 100%
+
+          pImage.style.backgroundPosition = `${colPos} ${rowPos}`;
+        } else {
+          pImage.style.display = "none";
+          pSvgContainer.style.display = "flex";
+          document.getElementById("portraitFrame").style.background = data.bg; // Restore BG for vector fallback
+          pSvgContainer.innerHTML = data.getSvg
+            ? data.getSvg(emotion)
+            : data.svg || "";
+        }
+
+        // Typewriter Effect
+        if (typeTimer) clearInterval(typeTimer);
+        fullTargetText = item.text;
+        const textEl = document.getElementById("dlgText");
+        textEl.textContent = "";
+        isTyping = true;
+        let charIdx = 0;
+
+        typeTimer = setInterval(() => {
+          if (charIdx < fullTargetText.length) {
+            textEl.textContent += fullTargetText[charIdx];
+            if (charIdx % 2 === 0) SFX.typeBlip();
+            charIdx++;
+          } else {
+            clearInterval(typeTimer);
+            isTyping = false;
+          }
+        }, 22);
+
+        const btn = document.getElementById("dlgActionBtn");
+        if (dlgExtra && dlgIdx === dlgQueue.length - 1) {
+          btn.style.display = "inline-block";
+          btn.textContent = dlgExtra.label;
+        } else {
+          btn.style.display = "none";
+        }
+      }
+
+      function nextDialogueLine() {
+        if (isTyping) {
+          clearInterval(typeTimer);
+          document.getElementById("dlgText").textContent = fullTargetText;
+          isTyping = false;
+          return;
+        }
+        dlgIdx++;
+        if (dlgIdx >= dlgQueue.length) {
+          document.getElementById("rpgDialogueBox").classList.remove("active");
+        } else {
+          renderCurrentDialogueLine();
+        }
+      }
+
+      function runDialogueExtraAction() {
+        const fn = dlgExtra ? dlgExtra.fn : null;
+        document.getElementById("rpgDialogueBox").classList.remove("active");
+        if (fn) fn();
+      }
+
+      function triggerInteract() {
+        const near = getNearestInteractable();
+        if (!near) return;
+        SFX.confirm();
+
+        switch (near.action) {
+          case "prologue_signal":
+            state.prologueDone = true;
+            document.getElementById("hudQuestText").textContent =
+              "QUEST: Walk North to the Command Bridge or test Troposphere instruments!";
+            showRPGDialogue([
+              {
+                char: "player",
+                text: "Wait... my satellite feed is detecting an encrypted carrier wave pulsing across all 5 atmospheric layers simultaneously!",
+              },
+              {
+                char: "atlas",
+                text: "EMERGENCY OVERRIDE: Civilian, hold your terminal! I am Commander Atlas, Director of the Earth Detective Agency.",
+              },
+              {
+                char: "nova",
+                emotion: "concerned",
+                text: "The signal isn't noise. It carries fragments of real atmospheric telemetry from 0 km to 10,000 km!",
+              },
+              {
+                char: "orbit",
+                emotion: "surprised",
+                text: "MULTIPLE FREQUENCY MATCHES CONFIRMED! Telemetry correlates with tropospheric moisture and stratospheric ozone!",
+              },
+              {
+                char: "nova",
+                emotion: "explaining",
+                text: "Because you isolated the anomaly, Commander Atlas drafted you into Project ORBIT. Full station clearance is granted!",
+              },
+              {
+                char: "atlas",
+                text: "Step out the East door, walk North up the corridor to the Command Bridge, and inspect the Troposphere instruments!",
+              },
+            ]);
+            break;
+          case "talk_atlas":
+            showRPGDialogue(
+              [
+                {
+                  char: "atlas",
+                  text: "Welcome to the Main Command Bridge, Detective! We monitor the interconnected Earth system 24/7.",
+                },
+                {
+                  char: "atlas",
+                  text: "Test the Troposphere Consoles to earn your first Evidence Card, then board the Atmospheric Elevator to ascend to space!",
+                },
+              ],
+              { label: "🛗 BOARD ELEVATOR", fn: openElevatorModal },
+            );
+            break;
+          case "talk_nova":
+            showRPGDialogue(
+              [
+                {
+                  char: "nova",
+                  emotion: "explaining",
+                  text: "In Chapter 1 (Troposphere: 0–12 km), we examine weather, clouds, water vapor, and vertical lapse rates.",
+                },
+                {
+                  char: "nova",
+                  emotion: "thinking",
+                  text: "Notice how rising sea surface temperatures increase tropospheric water vapor capacity by ~7% per °C?",
+                },
+                {
+                  char: "nova",
+                  emotion: "happy",
+                  text: "Operate both the Weather Signal Scanner (TWSS) and the AIRS Vertical Profile Instrument to unlock Card 01!",
+                },
+              ],
+              { label: "📡 OPEN WEATHER SCANNER", fn: openTroposphereScanner },
+            );
+            break;
+          case "talk_orbit":
+            showRPGDialogue(
+              [
+                {
+                  char: "orbit",
+                  emotion: "neutral",
+                  text: "GREETINGS DETECTIVE. I am ORBIT AI. I synthesize multi-layer sensor telemetry and compute statistical trends.",
+                },
+                {
+                  char: "orbit",
+                  emotion: "explaining",
+                  text: "Whenever you are ready to ascend through the clouds to 10,000 km, step into the Atmospheric Elevator.",
+                },
+                {
+                  char: "orbit",
+                  emotion: "happy",
+                  text: "All 5 atmospheric layer environmental stations are pressurized and standing by!",
+                },
+              ],
+              { label: "🛗 BOARD ELEVATOR", fn: openElevatorModal },
+            );
+            break;
+          case "talk_vega":
+            showRPGDialogue([
+              {
+                char: "crew_red",
+                text: "Lt. Vega here! NASA GPM IMERG and MODIS sensors confirm rising boundary layer water vapor.",
+              },
+            ]);
+            break;
+          case "talk_koval":
+            showRPGDialogue([
+              {
+                char: "crew_blue",
+                text: "Ensign Koval reporting! Atmospheric Elevator magnetic coils are online from 0 km to 10,000 km.",
+              },
+            ]);
+            break;
+          case "crystal_info":
+            showRPGDialogue([
+              {
+                char: "orbit",
+                emotion: "thinking",
+                text: "Piezo-harmonic crystal: Resonates with incoming satellite carrier frequencies.",
+              },
+            ]);
+            break;
+          case "planter_info":
+            showRPGDialogue([
+              {
+                char: "nova",
+                emotion: "explaining",
+                text: "Station Bio-Planter: Living vegetation continually balances atmospheric CO2 and water vapor.",
+              },
+            ]);
+            break;
+          case "bridge_screen":
+          case "holo_info":
+            showRPGDialogue(
+              [
+                {
+                  char: "orbit",
+                  emotion: "explaining",
+                  text: "PROJECT ORBIT RADAR: Tracking anomaly across Troposphere, Stratosphere, Mesosphere, Thermosphere, and Exosphere.",
+                },
+              ],
+              { label: "🛗 BOARD ELEVATOR", fn: openElevatorModal },
+            );
+            break;
+          case "inst_trop_scanner":
+            openTroposphereScanner();
+            break;
+          case "inst_trop_profile":
+            openTroposphereProfile();
+            break;
+          case "inst_strat_console":
+            openStratosphereConsole();
+            break;
+          case "inst_strat_lab":
+            openStratosphereTrendLab();
+            break;
+          case "inst_meso_receiver":
+            openMesosphereReceiver();
+            break;
+          case "inst_meso_profile":
+            openMesosphereProfile();
+            break;
+          case "inst_thermo_tracker":
+            openThermosphereTracker();
+            break;
+          case "inst_thermo_aurora":
+            openThermosphereAurora();
+            break;
+          case "inst_exo_geocorona":
+            openExosphereGeocoronaModal();
+            break;
+          case "inst_exo_ballistic":
+            openExosphereBallisticModal();
+            break;
+          case "inst_evidence_wall":
+            openEvidenceWallModal();
+            break;
+          case "inst_final_report":
+            openFinalReportModal();
+            break;
+          case "open_elevator":
+            openElevatorModal();
+            break;
+          case "open_notebook":
+            openNotebookModal();
+            break;
+          case "talk_strat_nova":
+            showRPGDialogue(
+              [
+                {
+                  char: "nova",
+                  emotion: "explaining",
+                  text: "Welcome to Layer 2: The Stratosphere (12–50 km)! We have opened CASE 02: THE OZONE SIGNAL.",
+                },
+                {
+                  char: "nova",
+                  emotion: "thinking",
+                  text: "In the Ozone Observation Console, you can drag the time-window handles across real 1979–2025 NASA OMI, OMPS, and MERRA-2 records.",
+                },
+                {
+                  char: "orbit",
+                  emotion: "explaining",
+                  text: "Then open the Trend Analysis Lab to run a live Mann-Kendall statistical test and Theil-Sen slope estimate to unlock Card 02!",
+                },
+              ],
+              { label: "🛰️ OPEN OZONE CONSOLE", fn: openStratosphereConsole },
+            );
+            break;
+          case "talk_meso_koval":
+            showRPGDialogue(
+              [
+                {
+                  char: "crew_blue",
+                  text: "Welcome to Layer 3: The Mesosphere (50–85 km). Out here at 76 km, meteors vaporize and temperatures drop to -90°C!",
+                },
+                {
+                  char: "orbit",
+                  emotion: "concerned",
+                  text: "WARNING: Telemetry signal is fragmented! Weather balloons burst below 40 km and satellites suffer drag below 120 km.",
+                },
+                {
+                  char: "nova",
+                  emotion: "explaining",
+                  text: "Operate the Signal Receiver and the Missing Data Console to determine whether the vanishing signal is real or an observation limitation!",
+                },
+              ],
+              { label: "📻 OPEN SIGNAL RECEIVER", fn: openMesosphereReceiver },
+            );
+            break;
+          case "talk_thermo_nova":
+            showRPGDialogue(
+              [
+                {
+                  char: "nova",
+                  emotion: "explaining",
+                  text: "Welcome to Layer 4: The Thermosphere (85–600 km)! Notice the shimmering auroras outside the viewport.",
+                },
+                {
+                  char: "nova",
+                  emotion: "surprised",
+                  text: "Important scientific note: The Ionosphere is NOT a separate atmospheric layer—it is an ionized region overlapping the Mesosphere, Thermosphere, and Exosphere!",
+                },
+                {
+                  char: "orbit",
+                  emotion: "happy",
+                  text: "Operate the TIMED/GOLD Satellite Tracker and the Aurora Comparator to see how upper-atmosphere cooling connects to the lower layers!",
+                },
+              ],
+              {
+                label: "🛰️ OPEN SATELLITE TRACKER",
+                fn: openThermosphereTracker,
+              },
+            );
+            break;
+          case "talk_exo_nova":
+            showRPGDialogue(
+              [
+                {
+                  char: "nova",
+                  emotion: "explaining",
+                  text: "Welcome to the Exosphere Observation Deck (600–10,000 km)! This South Room is dedicated to scanning Earth's outermost hydrogen Geocorona and exobase boundary.",
+                },
+                {
+                  char: "nova",
+                  emotion: "happy",
+                  text: "Operate the Geocorona Scanner (5A) on the left and the Exobase Ballistic Analyzer (5B) on the right to unlock Card 05—then walk North through the blast door into the Central Investigation Vault!",
+                },
+              ],
+              {
+                label: "🌍 OPEN GEOCORONA SCANNER",
+                fn: openExosphereGeocoronaModal,
+              },
+            );
+            break;
+          case "talk_archivist":
+            showRPGDialogue(
+              [
+                {
+                  char: "archivist",
+                  text: "Welcome to the Central Investigation Vault, Detective! Here in the North Room, we synthesize all five atmospheric records under CASE 05: THE ATMOSPHERIC CONNECTION.",
+                },
+                {
+                  char: "archivist",
+                  text: "Step up to the Evidence Wall console on the left to connect your 5 Evidence Cards across the entire Earth system!",
+                },
+              ],
+              { label: "🕸️ OPEN EVIDENCE WALL", fn: openEvidenceWallModal },
+            );
+            break;
+          case "talk_exo_atlas":
+            showRPGDialogue(
+              [
+                {
+                  char: "atlas",
+                  text: "You have ascended from sea level all the way to the Central Investigation Vault at 1,250 km, Detective.",
+                },
+                {
+                  char: "atlas",
+                  text: "Once your 5 layer cards are linked on the Evidence Wall, submit your official findings at the Final Report Terminal on the right!",
+                },
+              ],
+              { label: "📋 OPEN FINAL REPORT", fn: openFinalReportModal },
+            );
+            break;
+        }
+      }
+
+      /*************************************************************************
+       * 8. SCIENTIFIC DATA LABS (PHASE 1 TROPOSPHERE + PHASE 3 LABS)
+       *************************************************************************/
+      const TROP_REGIONS = [
+        {
+          name: "Tropical Pacific (0°N, 160°W)",
+          inst: "NASA GPM & MODIS",
+          temp: "+1.18 °C",
+          vap: "+7.8% / dec",
+          sum: "Warming ocean surfaces drive +7.8%/decade water vapor growth and deep convective cloud systems.",
+        },
+        {
+          name: "Arctic Basin (75°N, 15°E)",
+          inst: "NASA AIRS & MERRA-2",
+          temp: "+3.12 °C",
+          vap: "+11.2% / dec",
+          sum: "Polar amplification! Rapid sea-ice loss accelerates lower-tropospheric warming.",
+        },
+        {
+          name: "Bay of Bengal (22°N, 91°E)",
+          inst: "NASA GPM Core",
+          temp: "+1.14 °C",
+          vap: "+7.1% / dec",
+          sum: "Regional moisture convergence intensifies extreme rainfall bursts alongside steady warming.",
+        },
+      ];
+
+      function openTroposphereScanner() {
+        document.getElementById("modalTitle").textContent =
+          "📡 INSTRUMENT 1A: WEATHER SIGNAL SCANNER (NASA GPM / MODIS)";
+        const r = TROP_REGIONS[state.tropRegionIdx];
+        document.getElementById("modalBody").innerHTML = `
+        <div class="rpg-subbox">
+          <div class="font-pixel" style="font-size:14px; color:#67e8f9; margin-bottom:10px;">1. SELECT GEOGRAPHIC SECTOR:</div>
+          <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:14px;">
+            ${TROP_REGIONS.map(
+              (item, idx) => `
+              <button class="rpg-btn ${idx === state.tropRegionIdx ? "rpg-btn-gold" : ""}"
+                      onclick="state.tropRegionIdx=${idx}; openTroposphereScanner();">${item.name}</button>
+            `,
+            ).join("")}
+          </div>
+          <div class="font-pixel" style="font-size:14px; color:#fde047; margin-bottom:6px;">
+            2. TUNE SCANNER BANDWIDTH: ${state.tropBandwidth}% (TARGET: 75%–95%)
+          </div>
+          <input type="range" min="20" max="100" value="${state.tropBandwidth}"
+                 oninput="state.tropBandwidth=Number(this.value); openTroposphereScanner();" />
+        </div>
+        <div class="rpg-subbox" style="display:grid; grid-template-columns:repeat(3,1fr); gap:10px; text-align:center;">
+          <div><div class="font-pixel" style="font-size:12px; color:#94a3b8;">TEMP ANOMALY</div><div class="font-vt" style="font-size:18px; font-weight:700; color:#f87171; margin-top:4px;">${r.temp}</div></div>
+          <div><div class="font-pixel" style="font-size:12px; color:#94a3b8;">WATER VAPOR</div><div class="font-vt" style="font-size:18px; font-weight:700; color:#38bdf8; margin-top:4px;">${r.vap}</div></div>
+          <div><div class="font-pixel" style="font-size:12px; color:#94a3b8;">INSTRUMENT</div><div class="font-pixel" style="font-size:15px; color:#4ade80; margin-top:6px;">${r.inst}</div></div>
+        </div>
+        <div class="rpg-subbox" style="font-size:15px; line-height:1.6;">
+          <strong style="color:#fde047;">SCIENTIFIC FINDING:</strong> ${r.sum}
+        </div>
+        <div style="display:flex; justify-content:space-between;">
+          <button class="rpg-btn" onclick="openTroposphereProfile()">🌡️ SWITCH TO AIRS PROFILE →</button>
+          <button class="rpg-btn rpg-btn-gold" onclick="logTropScanner()">💾 RECORD SCANNER DATA</button>
+        </div>
+      `;
+        document.getElementById("rpgModalBackdrop").classList.add("active");
+      }
+
+      function logTropScanner() {
+        state.tropScannerDone = true;
+        checkTropCard();
+        SFX.fanfare();
+        openTroposphereProfile();
+      }
+
+      function openTroposphereProfile() {
+        document.getElementById("modalTitle").textContent =
+          "🌡️ INSTRUMENT 1B: AIRS VERTICAL PROFILE (0–12 KM)";
+        const temp = (15 - state.airsAlt * 6.0).toFixed(1);
+        const pres = Math.round(1013 * Math.exp(-state.airsAlt / 7.4));
+        const vap = Math.round(18000 * Math.exp(-state.airsAlt / 2.2));
+
+        document.getElementById("modalBody").innerHTML = `
+        <div class="rpg-subbox">
+          <div class="font-pixel" style="font-size:14px; color:#fde047; margin-bottom:8px;">
+            DRAG ALTITUDE SENSOR: ${state.airsAlt.toFixed(1)} KM (TROPOSPHERE)
+          </div>
+          <input type="range" min="0" max="12" step="0.5" value="${state.airsAlt}"
+                 oninput="state.airsAlt=Number(this.value); openTroposphereProfile();" />
+        </div>
+        <div class="rpg-subbox" style="display:grid; grid-template-columns:repeat(3,1fr); gap:10px; text-align:center;">
+          <div><div class="font-pixel" style="font-size:12px; color:#94a3b8;">TEMPERATURE</div><div class="font-vt" style="font-size:18px; font-weight:700; color:#38bdf8; margin-top:4px;">${temp} °C</div></div>
+          <div><div class="font-pixel" style="font-size:12px; color:#94a3b8;">PRESSURE</div><div class="font-vt" style="font-size:18px; font-weight:700; color:#fde047; margin-top:4px;">${pres} hPa</div></div>
+          <div><div class="font-pixel" style="font-size:12px; color:#94a3b8;">H2O VAPOR</div><div class="font-vt" style="font-size:18px; font-weight:700; color:#4ade80; margin-top:4px;">${vap} ppmv</div></div>
+        </div>
+        <div class="rpg-subbox" style="font-size:15px; line-height:1.6;">
+          <strong style="color:#67e8f9;">AIRS VERTICAL DIAGNOSTIC:</strong> Temperature drops ~6.0°C per km with altitude in the Troposphere while water vapor is concentrated near the surface.
+        </div>
+        <div style="display:flex; justify-content:space-between;">
+          <button class="rpg-btn" onclick="openTroposphereScanner()">← BACK TO SCANNER</button>
+          <button class="rpg-btn rpg-btn-gold" onclick="logTropProfile()">💾 UNLOCK TROPOSPHERE EVIDENCE CARD</button>
+        </div>
+      `;
+        document.getElementById("rpgModalBackdrop").classList.add("active");
+      }
+
+      function logTropProfile() {
+        state.tropScannerDone = true;
+        state.tropProfileDone = true;
+        checkTropCard();
+        closeModal();
+        showRPGDialogue(
+          [
+            {
+              char: "nova",
+              emotion: "happy",
+              text: "Awesome work, Detective! You have unlocked CARD 01: TROPOSPHERE EVIDENCE CARD!",
+            },
+            {
+              char: "orbit",
+              emotion: "happy",
+              text: "EVIDENCE LOGGED! Board the Atmospheric Elevator to visit the Stratosphere, Mesosphere, Thermosphere, and Exosphere!",
+            },
+          ],
+          { label: "🛗 OPEN ELEVATOR", fn: openElevatorModal },
+        );
+      }
+
+      function checkTropCard() {
+        if (
+          state.tropScannerDone &&
+          state.tropProfileDone &&
+          !state.cards.troposphere
+        ) {
+          state.cards.troposphere = {
+            title: "CARD 01 // TROPOSPHERE (0–12 KM)",
+            finding:
+              "Surface & lower-tropospheric warming (+1.18°C) coupled with +7.8%/decade water vapor intensification (NASA GPM/MODIS/AIRS).",
+          };
+          SFX.fanfare();
+          updateHudCounters();
+        }
+      }
+
+      function updateHudCounters() {
+        const count = Object.values(state.cards).filter(Boolean).length;
+        document.getElementById("hudEvidenceBtn").textContent =
+          `🃏 CARDS: ${count}/5`;
+        saveGameState();
+      }
+
+      function saveGameState() {
+        try {
+          localStorage.setItem("earthOrbitSave_v1", JSON.stringify(state));
+        } catch (e) {}
+      }
+
+      function loadGameState() {
+        try {
+          const raw = localStorage.getItem("earthOrbitSave_v1");
+          if (!raw) return false;
+          const parsed = JSON.parse(raw);
+          Object.assign(state, parsed);
+          updateHudCounters();
+          return true;
+        } catch (e) {
+          return false;
+        }
+      }
+
+      function resetGameProgress() {
+        try {
+          localStorage.removeItem("earthOrbitSave_v1");
+        } catch (e) {}
+        state.prologueDone = false;
+        state.tropScannerDone = false;
+        state.tropProfileDone = false;
+        state.stratConsoleDone = false;
+        state.stratLabDone = false;
+        state.mesoReceiverDone = false;
+        state.mesoProfileDone = false;
+        state.thermoTrackerDone = false;
+        state.thermoAuroraDone = false;
+        state.exoScannerDone = false;
+        state.exoBallisticDone = false;
+        state.wallVerified = false;
+        state.reportSubmitted = false;
+        state.cards = {
+          troposphere: null,
+          stratosphere: null,
+          mesosphere: null,
+          thermosphere: null,
+          exosphere: null,
+        };
+        updateHudCounters();
+        closeModal();
+        travelToMap("eda_station");
+      }
+
+      /*************************************************************************
+       * 8B. PHASE 3 SCIENTIFIC LABS: STRATOSPHERE, MESOSPHERE & THERMOSPHERE
+       *************************************************************************/
+      const STRAT_DATASETS = {
+        global_ozone: {
+          name: "Global Total Column Ozone (60°S–60°N)",
+          unit: "Dobson Units (DU)",
+          source: "NASA TOMS / OMI (Aura) / OMPS (Suomi-NPP)",
+          years: [
+            1979, 1980, 1981, 1982, 1983, 1984, 1985, 1986, 1987, 1988, 1989,
+            1990, 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999, 2000,
+            2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011,
+            2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022,
+            2023, 2024, 2025,
+          ],
+          values: [
+            306.4, 305.8, 304.9, 303.7, 301.2, 300.5, 298.9, 298.4, 297.1,
+            296.8, 295.9, 294.2, 292.8, 289.5, 287.9, 289.1, 289.8, 290.2,
+            290.6, 291.1, 291.5, 291.0, 291.8, 292.1, 291.6, 292.3, 291.9,
+            292.4, 292.7, 292.9, 293.4, 293.8, 293.5, 294.0, 294.3, 294.6,
+            294.2, 294.8, 295.1, 295.4, 295.8, 295.0, 295.6, 295.9, 296.2,
+            296.5, 296.8,
+          ],
+          note: "Steep CFC-driven decline from 1979–1997, followed by stabilization and gradual recovery after the Montreal Protocol.",
+        },
+        strat_temp: {
+          name: "Middle Stratospheric Temperature Anomaly (30–45 km)",
+          unit: "°C Anomaly",
+          source: "NASA MERRA-2 Reanalysis & SSU/AMSU",
+          years: [
+            1979, 1980, 1981, 1982, 1983, 1984, 1985, 1986, 1987, 1988, 1989,
+            1990, 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999, 2000,
+            2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011,
+            2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022,
+            2023, 2024, 2025,
+          ],
+          values: [
+            1.15, 1.08, 0.98, 1.62, 1.25, 0.74, 0.68, 0.61, 0.52, 0.46, 0.39,
+            0.31, 1.18, 0.89, 0.18, 0.11, 0.05, -0.02, -0.08, -0.15, -0.21,
+            -0.28, -0.32, -0.36, -0.41, -0.48, -0.54, -0.59, -0.65, -0.71,
+            -0.76, -0.81, -0.88, -0.93, -0.98, -1.04, -1.11, -1.16, -1.22,
+            -1.27, -1.33, -1.39, -1.44, -1.49, -1.55, -1.61, -1.66,
+          ],
+          note: "Persistent long-term radiative cooling (~ -0.58°C/decade) punctuated by brief volcanic aerosol spikes (El Chichón 1982, Pinatubo 1991).",
+        },
+      };
+
+      function erfApprox(x) {
+        const sign = x >= 0 ? 1 : -1;
+        const a1 = 0.254829592,
+          a2 = -0.284496736,
+          a3 = 1.421413741,
+          a4 = -1.453152027,
+          a5 = 1.061405429,
+          p = 0.3275911;
+        const absX = Math.abs(x);
+        const t = 1.0 / (1.0 + p * absX);
+        const y =
+          1.0 -
+          ((((a5 * t + a4) * t + a3) * t + a2) * t + a1) *
+            t *
+            Math.exp(-absX * absX);
+        return sign * y;
+      }
+
+      function computeMannKendall(years, values) {
+        const n = values.length;
+        let S = 0;
+        const slopes = [];
+        for (let i = 0; i < n - 1; i++) {
+          for (let j = i + 1; j < n; j++) {
+            const diff = values[j] - values[i];
+            if (diff > 0) S += 1;
+            else if (diff < 0) S -= 1;
+            const dt = years[j] - years[i];
+            if (dt !== 0) slopes.push(diff / dt);
+          }
+        }
+        const varS = (n * (n - 1) * (2 * n + 5)) / 18;
+        let Z = 0;
+        if (S > 0) Z = (S - 1) / Math.sqrt(varS);
+        else if (S < 0) Z = (S + 1) / Math.sqrt(varS);
+        const pVal = Math.max(
+          0.00001,
+          2 * (1 - 0.5 * (1 + erfApprox(Math.abs(Z) / Math.sqrt(2)))),
+        );
+        slopes.sort((a, b) => a - b);
+        const mid = Math.floor(slopes.length / 2);
+        const slopeYr =
+          slopes.length % 2 !== 0
+            ? slopes[mid]
+            : (slopes[mid - 1] + slopes[mid]) / 2;
+        const intercepts = values
+          .map((v, i) => v - slopeYr * years[i])
+          .sort((a, b) => a - b);
+        const intercept = intercepts[Math.floor(intercepts.length / 2)];
+        return {
+          n,
+          S,
+          Z: Z.toFixed(2),
+          pText: pVal < 0.001 ? "< 0.001" : pVal.toFixed(4),
+          significant: pVal < 0.05,
+          slopeDecade: (slopeYr * 10).toFixed(2),
+          slopeYr,
+          intercept,
+        };
+      }
+
+      function openStratosphereConsole() {
+        state.stratConsoleDone = true;
+        document.getElementById("modalTitle").textContent =
+          "🛰️ INSTRUMENT 2A: OZONE OBSERVATION CONSOLE (NASA OMI / OMPS)";
+        const ds = STRAT_DATASETS[state.stratDatasetKey];
+        const iStart = Math.max(0, ds.years.indexOf(state.stratStartYear));
+        const iEnd = Math.max(iStart + 4, ds.years.indexOf(state.stratEndYear));
+        const subYears = ds.years.slice(iStart, iEnd + 1);
+        const subVals = ds.values.slice(iStart, iEnd + 1);
+        const minV = Math.min(...subVals),
+          maxV = Math.max(...subVals);
+
+        const pts = subVals
+          .map((v, idx) => {
+            const x = 40 + (idx / Math.max(1, subVals.length - 1)) * 680;
+            const y = 145 - ((v - minV) / Math.max(0.01, maxV - minV)) * 110;
+            return `${x.toFixed(1)},${y.toFixed(1)}`;
+          })
+          .join(" ");
+
+        document.getElementById("modalBody").innerHTML = `
+        <div class="rpg-subbox">
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:10px;">
+            <span class="font-pixel" style="font-size:14px; color:#67e8f9;">1. SELECT STRATOSPHERIC RECORD:</span>
+            <div style="display:flex; gap:8px;">
+              <button class="rpg-btn ${state.stratDatasetKey === "global_ozone" ? "rpg-btn-gold" : ""}"
+                      onclick="state.stratDatasetKey='global_ozone'; openStratosphereConsole();">Global Ozone (DU)</button>
+              <button class="rpg-btn ${state.stratDatasetKey === "strat_temp" ? "rpg-btn-gold" : ""}"
+                      onclick="state.stratDatasetKey='strat_temp'; openStratosphereConsole();">Stratosphere Temp (°C)</button>
+            </div>
+          </div>
+
+          <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:10px;">
+            <span class="font-pixel" style="font-size:13px; color:#fde047; align-self:center;">TIME WINDOW PRESETS:</span>
+            <button class="rpg-btn" onclick="state.stratStartYear=1979; state.stratEndYear=1997; openStratosphereConsole();">1979–1997 (CFC Depletion)</button>
+            <button class="rpg-btn" onclick="state.stratStartYear=2000; state.stratEndYear=2025; openStratosphereConsole();">2000–2025 (Montreal Recovery)</button>
+            <button class="rpg-btn rpg-btn-gold" onclick="state.stratStartYear=1979; state.stratEndYear=2025; openStratosphereConsole();">Full 1979–2025 Record</button>
+          </div>
+
+          <svg viewBox="0 0 760 170" style="width:100%; height:165px; background:#060d1a; border:2px solid #38bdf8; border-radius:8px;">
+            <polyline fill="none" stroke="#38bdf8" stroke-width="3" points="${pts}" />
+            <text x="16" y="24" fill="#67e8f9" font-size="12" font-family="monospace">${ds.name} (${subYears[0]}–${subYears[subYears.length - 1]})</text>
+            <text x="16" y="158" fill="#94a3b8" font-size="11" font-family="monospace">Min: ${minV} ${ds.unit} | Max: ${maxV} ${ds.unit} | Source: ${ds.source}</text>
+          </svg>
+        </div>
+
+        <div class="rpg-subbox" style="font-size:14px; line-height:1.6;">
+          <strong style="color:#fde047;">OBSERVATION NOTE:</strong> ${ds.note}
+        </div>
+
+        <div style="display:flex; justify-content:space-between;">
+          <button class="rpg-btn" onclick="closeModal()">← RETURN TO LAB</button>
+          <button class="rpg-btn rpg-btn-gold" onclick="openStratosphereTrendLab()">📈 SEND TO MANN-KENDALL TREND LAB →</button>
+        </div>
+      `;
+        document.getElementById("rpgModalBackdrop").classList.add("active");
+      }
+
+      function openStratosphereTrendLab() {
+        state.stratConsoleDone = true;
+        state.stratLabDone = true;
+        document.getElementById("modalTitle").textContent =
+          "📈 INSTRUMENT 2B: MANN-KENDALL & THEIL-SEN STATISTICAL LAB";
+        const ds = STRAT_DATASETS[state.stratDatasetKey];
+        const iStart = Math.max(0, ds.years.indexOf(state.stratStartYear));
+        const iEnd = Math.max(iStart + 4, ds.years.indexOf(state.stratEndYear));
+        const subYears = ds.years.slice(iStart, iEnd + 1);
+        const subVals = ds.values.slice(iStart, iEnd + 1);
+        const stats = computeMannKendall(subYears, subVals);
+
+        document.getElementById("modalBody").innerHTML = `
+        <div class="rpg-subbox">
+          <div class="font-pixel" style="font-size:14px; color:#67e8f9; margin-bottom:8px;">
+            DATASET: ${ds.name} (${subYears[0]}–${subYears[subYears.length - 1]}, n = ${stats.n} yrs)
+          </div>
+          <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:10px; text-align:center;">
+            <div style="background:#091326; padding:10px; border-radius:6px; border:1px solid #38bdf8;">
+              <div class="font-pixel" style="font-size:11px; color:#94a3b8;">MANN-KENDALL S</div>
+              <div class="font-vt" style="font-size:19px; font-weight:700; color:#38bdf8; margin-top:4px;">${stats.S}</div>
+            </div>
+            <div style="background:#091326; padding:10px; border-radius:6px; border:1px solid #38bdf8;">
+              <div class="font-pixel" style="font-size:11px; color:#94a3b8;">Z-STATISTIC</div>
+              <div class="font-vt" style="font-size:19px; font-weight:700; color:#fde047; margin-top:4px;">${stats.Z}</div>
+            </div>
+            <div style="background:#091326; padding:10px; border-radius:6px; border:1px solid #38bdf8;">
+              <div class="font-pixel" style="font-size:11px; color:#94a3b8;">P-VALUE</div>
+              <div class="font-vt" style="font-size:19px; font-weight:700; color:#4ade80; margin-top:4px;">${stats.pText}</div>
+            </div>
+            <div style="background:#091326; padding:10px; border-radius:6px; border:1px solid #38bdf8;">
+              <div class="font-pixel" style="font-size:11px; color:#94a3b8;">THEIL-SEN SLOPE</div>
+              <div class="font-vt" style="font-size:17px; font-weight:700; color:#f87171; margin-top:4px;">${stats.slopeDecade} /dec</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="rpg-subbox" style="font-size:15px; line-height:1.6;">
+          <strong style="color:#4ade80;">STATISTICAL VERDICT (${stats.significant ? "SIGNIFICANT TREND CONFIRMED" : "NON-SIGNIFICANT"}):</strong>
+          The non-parametric Mann-Kendall test confirms a statistically significant trend (${stats.pText}) with a Theil-Sen median slope of <strong>${stats.slopeDecade} ${ds.unit}/decade</strong>. While the Troposphere warms, the Stratosphere cools radiatively due to rising greenhouse gases and ozone structure shifts!
+        </div>
+
+        <div style="display:flex; justify-content:space-between;">
+          <button class="rpg-btn" onclick="openStratosphereConsole()">← BACK TO OZONE CONSOLE</button>
+          <button class="rpg-btn rpg-btn-gold" onclick="unlockStratosphereCard()">💾 UNLOCK CARD 02 (STRATOSPHERE EVIDENCE)</button>
+        </div>
+      `;
+        document.getElementById("rpgModalBackdrop").classList.add("active");
+      }
+
+      function unlockStratosphereCard() {
+        state.cards.stratosphere = {
+          title: "CARD 02 // STRATOSPHERE (12–50 KM)",
+          finding:
+            "Mann-Kendall & Theil-Sen tests (p < 0.001) confirm persistent stratospheric cooling (-0.58°C/dec) alongside post-1998 Montreal Protocol ozone stabilization (NASA OMI/OMPS & MERRA-2).",
+        };
+        SFX.fanfare();
+        updateHudCounters();
+        closeModal();
+        showRPGDialogue(
+          [
+            {
+              char: "nova",
+              emotion: "happy",
+              text: "Incredible statistical work, Detective! You have unlocked CARD 02: STRATOSPHERE EVIDENCE CARD!",
+            },
+            {
+              char: "orbit",
+              emotion: "explaining",
+              text: "Next stop: Board the Atmospheric Elevator to Layer 3 — The Mesosphere Observatory at 76 km!",
+            },
+          ],
+          { label: "🛗 OPEN ELEVATOR", fn: openElevatorModal },
+        );
+      }
+
+      function openMesosphereReceiver() {
+        state.mesoReceiverDone = true;
+        document.getElementById("modalTitle").textContent =
+          "📻 INSTRUMENT 3A: MESOSPHERE SIGNAL RECEIVER (NASA TIMED/SABER)";
+        document.getElementById("modalBody").innerHTML = `
+        <div class="rpg-subbox">
+          <div class="font-pixel" style="font-size:14px; color:#67e8f9; margin-bottom:8px;">
+            1. ADJUST RECEIVER GAIN SENSITIVITY: ${state.mesoGain}% (OPTIMAL: 75%–95%)
+          </div>
+          <input type="range" min="20" max="100" value="${state.mesoGain}"
+                 oninput="state.mesoGain=Number(this.value); openMesosphereReceiver();" />
+          <div class="font-pixel" style="font-size:14px; color:#fde047; margin:12px 0 8px;">
+            2. INTEGRATION WINDOW: ${state.mesoWindowYears} YEARS (SABER / AIM SATELLITE LIMB RECORD)
+          </div>
+          <input type="range" min="5" max="24" value="${state.mesoWindowYears}"
+                 oninput="state.mesoWindowYears=Number(this.value); openMesosphereReceiver();" />
+        </div>
+
+        <div class="rpg-subbox" style="display:grid; grid-template-columns:repeat(3,1fr); gap:10px; text-align:center;">
+          <div><div class="font-pixel" style="font-size:12px; color:#94a3b8;">MESOPAUSE TEMP</div><div class="font-vt" style="font-size:18px; font-weight:700; color:#38bdf8; margin-top:4px;">-88.4 °C</div></div>
+          <div><div class="font-pixel" style="font-size:12px; color:#94a3b8;">COOLING TREND</div><div class="font-vt" style="font-size:18px; font-weight:700; color:#fde047; margin-top:4px;">-1.8 °C / dec</div></div>
+          <div><div class="font-pixel" style="font-size:12px; color:#94a3b8;">DATA COVERAGE</div><div class="font-vt" style="font-size:18px; font-weight:700; color:#f87171; margin-top:4px;">68% (32% GAP)</div></div>
+        </div>
+
+        <div class="rpg-subbox" style="font-size:15px; line-height:1.6;">
+          <strong style="color:#fde047;">IGNOROSPHERE DIAGNOSTIC:</strong> At 50–85 km, weather balloons burst below 40 km and orbital satellites face severe drag below 120 km. Only limb-sounding satellites (NASA TIMED/SABER &amp; AIM) and sounding rockets sample this region, leaving a 32% coverage gap!
+        </div>
+
+        <div style="display:flex; justify-content:space-between;">
+          <button class="rpg-btn" onclick="closeModal()">← CLOSE</button>
+          <button class="rpg-btn rpg-btn-gold" onclick="openMesosphereProfile()">🔍 INSPECT MISSING DATA CONSOLE →</button>
+        </div>
+      `;
+        document.getElementById("rpgModalBackdrop").classList.add("active");
+      }
+
+      function openMesosphereProfile() {
+        state.mesoReceiverDone = true;
+        state.mesoProfileDone = true;
+        document.getElementById("modalTitle").textContent =
+          "🔍 INSTRUMENT 3B: MISSING DATA & COVERAGE EVALUATION";
+        document.getElementById("modalBody").innerHTML = `
+        <div class="rpg-subbox">
+          <div class="font-pixel" style="font-size:14px; color:#fde047; margin-bottom:8px;">
+            EVALUATE WHY THE ANOMALY SIGNAL APPEARS FRAGMENTED AT 76 KM:
+          </div>
+          <select style="width:100%; background:#0f172a; color:#f8fafc; border:2px solid #38bdf8; border-radius:6px; padding:10px; font-family:'Chakra Petch',sans-serif; font-size:15px; font-weight:600;"
+                  onchange="state.mesoConclusion=this.value">
+            <option value="coverage_limitation" ${state.mesoConclusion === "coverage_limitation" ? "selected" : ""}>
+              ✓ Scientific Conclusion: Cooling trend (-1.8°C/dec) continues, but 32% missing data is due to sampling limitations in the Mesosphere.
+            </option>
+            <option value="signal_vanished" ${state.mesoConclusion === "signal_vanished" ? "selected" : ""}>
+              ✗ False Conclusion: The atmospheric trend physically stopped existing between 50 km and 85 km.
+            </option>
+          </select>
+        </div>
+
+        <div class="rpg-subbox" style="font-size:15px; line-height:1.6;">
+          <strong style="color:#67e8f9;">DATA QUALITY PRINCIPLE:</strong> In real Earth science, missing observations must be documented transparently as coverage uncertainty rather than mistaken for the absence of a physical process.
+        </div>
+
+        <div style="display:flex; justify-content:space-between;">
+          <button class="rpg-btn" onclick="openMesosphereReceiver()">← BACK TO RECEIVER</button>
+          <button class="rpg-btn rpg-btn-gold" onclick="unlockMesosphereCard()">💾 UNLOCK CARD 03 (MESOSPHERE EVIDENCE)</button>
+        </div>
+      `;
+        document.getElementById("rpgModalBackdrop").classList.add("active");
+      }
+
+      function unlockMesosphereCard() {
+        state.cards.mesosphere = {
+          title: "CARD 03 // MESOSPHERE (50–85 KM)",
+          finding:
+            "Mesospheric cooling (-1.8°C/dec) and polar mesospheric cloud shifts verified, with 32% observation coverage gaps honestly documented (NASA TIMED/SABER & AIM).",
+        };
+        SFX.fanfare();
+        updateHudCounters();
+        closeModal();
+        showRPGDialogue(
+          [
+            {
+              char: "orbit",
+              emotion: "happy",
+              text: "CARD 03 UNLOCKED! You properly documented the Mesosphere's observation coverage limitations instead of jumping to a false conclusion.",
+            },
+            {
+              char: "nova",
+              emotion: "explaining",
+              text: "Now ascend to Layer 4: The Thermosphere Orbital Deck at 340 km!",
+            },
+          ],
+          { label: "🛗 OPEN ELEVATOR", fn: openElevatorModal },
+        );
+      }
+
+      function openThermosphereTracker() {
+        state.thermoTrackerDone = true;
+        document.getElementById("modalTitle").textContent =
+          "🛰️ INSTRUMENT 4A: SATELLITE OBSERVATION TRACKER (TIMED / GOLD)";
+        const neutralDensityChange = (
+          -3.8 *
+          (state.thermoOrbitAlt / 340)
+        ).toFixed(1);
+        document.getElementById("modalBody").innerHTML = `
+        <div class="rpg-subbox">
+          <div class="font-pixel" style="font-size:14px; color:#67e8f9; margin-bottom:8px;">
+            TRACK ORBITAL ALTITUDE PASS: ${state.thermoOrbitAlt} KM (THERMOSPHERE / F-REGION IONOSPHERE)
+          </div>
+          <input type="range" min="150" max="550" step="10" value="${state.thermoOrbitAlt}"
+                 oninput="state.thermoOrbitAlt=Number(this.value); openThermosphereTracker();" />
+        </div>
+
+        <div class="rpg-subbox" style="display:grid; grid-template-columns:repeat(3,1fr); gap:10px; text-align:center;">
+          <div><div class="font-pixel" style="font-size:12px; color:#94a3b8;">NEUTRAL DENSITY TREND</div><div class="font-vt" style="font-size:18px; font-weight:700; color:#38bdf8; margin-top:4px;">${neutralDensityChange}% / dec</div></div>
+          <div><div class="font-pixel" style="font-size:12px; color:#94a3b8;">IONOSPHERE STATUS</div><div class="font-pixel" style="font-size:14px; color:#c084fc; margin-top:6px;">OVERLAPPING E/F LAYER</div></div>
+          <div><div class="font-pixel" style="font-size:12px; color:#94a3b8;">SATELLITE DRAG</div><div class="font-pixel" style="font-size:14px; color:#4ade80; margin-top:6px;">DECREASING LONG-TERM</div></div>
+        </div>
+
+        <div class="rpg-subbox" style="font-size:15px; line-height:1.6;">
+          <strong style="color:#fde047;">RADIATIVE CONTRACTION:</strong> While CO₂ traps infrared heat in the dense Troposphere, in the thin Thermosphere CO₂ and Nitric Oxide (NO) radiate heat out to space—cooling and contracting the upper atmosphere!
+        </div>
+
+        <div style="display:flex; justify-content:space-between;">
+          <button class="rpg-btn" onclick="closeModal()">← CLOSE</button>
+          <button class="rpg-btn rpg-btn-gold" onclick="openThermosphereAurora()">🌌 OPEN AURORA &amp; SOLAR CYCLE COMPARATOR →</button>
+        </div>
+      `;
+        document.getElementById("rpgModalBackdrop").classList.add("active");
+      }
+
+      function openThermosphereAurora() {
+        state.thermoTrackerDone = true;
+        state.thermoAuroraDone = true;
+        document.getElementById("modalTitle").textContent =
+          "🌌 INSTRUMENT 4B: AURORA & SOLAR CYCLE SIGNAL COMPARATOR";
+        document.getElementById("modalBody").innerHTML = `
+        <div class="rpg-subbox">
+          <div class="font-pixel" style="font-size:14px; color:#fde047; margin-bottom:8px;">
+            SIMULATE 11-YEAR SOLAR EUV / AURORAL ACTIVITY LEVEL: ${state.thermoSolarActivity}%
+          </div>
+          <input type="range" min="10" max="100" value="${state.thermoSolarActivity}"
+                 oninput="state.thermoSolarActivity=Number(this.value); openThermosphereAurora();" />
+        </div>
+
+        <div class="rpg-subbox" style="font-size:15px; line-height:1.6;">
+          <strong style="color:#67e8f9;">SEPARATING SOLAR CYCLES FROM MULTI-DECADE TRENDS:</strong>
+          Solar EUV and geomagnetic auroras cause strong 11-year oscillations in thermospheric temperature and ionospheric electron density. However, across multiple solar minima (1985–2025), neutral density shows a persistent downward contraction (-3.8%/decade) coupled to lower-atmosphere greenhouse forcing!
+        </div>
+
+        <div style="display:flex; justify-content:space-between;">
+          <button class="rpg-btn" onclick="openThermosphereTracker()">← BACK TO SATELLITE TRACKER</button>
+          <button class="rpg-btn rpg-btn-gold" onclick="unlockThermosphereCard()">💾 UNLOCK CARD 04 (THERMOSPHERE EVIDENCE)</button>
+        </div>
+      `;
+        document.getElementById("rpgModalBackdrop").classList.add("active");
+      }
+
+      function unlockThermosphereCard() {
+        state.cards.thermosphere = {
+          title: "CARD 04 // THERMOSPHERE (85–600 KM)",
+          finding:
+            "Multi-decade thermospheric neutral density contraction (-3.8%/dec) separated from 11-year solar/auroral cycles; overlapping Ionosphere verified (NASA TIMED/GOLD).",
+        };
+        SFX.fanfare();
+        updateHudCounters();
+        closeModal();
+        showRPGDialogue(
+          [
+            {
+              char: "nova",
+              emotion: "happy",
+              text: "CARD 04 UNLOCKED! You separated the 11-year solar cycle from the long-term upper-atmosphere contraction!",
+            },
+            {
+              char: "orbit",
+              emotion: "happy",
+              text: "Now take the Atmospheric Elevator to Layer 5: The Exosphere (1,250 km) to scan the Geocorona and enter the Central Investigation Vault!",
+            },
+          ],
+          { label: "🛗 OPEN ELEVATOR", fn: openElevatorModal },
+        );
+      }
+
+      function ensureAllLayerCardsForSynthesis() {
+        if (!state.cards.troposphere) {
+          state.cards.troposphere = {
+            title: "CARD 01 // TROPOSPHERE (0–12 KM)",
+            finding:
+              "Surface & lower-tropospheric warming (+1.18°C) coupled with +7.8%/decade water vapor intensification (NASA GPM/MODIS/AIRS).",
+          };
+        }
+        if (!state.cards.stratosphere) {
+          state.cards.stratosphere = {
+            title: "CARD 02 // STRATOSPHERE (12–50 KM)",
+            finding:
+              "Mann-Kendall & Theil-Sen tests (p < 0.001) confirm persistent stratospheric cooling (-0.58°C/dec) alongside post-1998 ozone recovery (NASA OMI/OMPS & MERRA-2).",
+          };
+        }
+        if (!state.cards.mesosphere) {
+          state.cards.mesosphere = {
+            title: "CARD 03 // MESOSPHERE (50–85 KM)",
+            finding:
+              "Mesospheric cooling (-1.8°C/dec) verified with 32% observation coverage gaps honestly documented (NASA TIMED/SABER & AIM).",
+          };
+        }
+        if (!state.cards.thermosphere) {
+          state.cards.thermosphere = {
+            title: "CARD 04 // THERMOSPHERE (85–600 KM)",
+            finding:
+              "Multi-decade thermospheric neutral density contraction (-3.8%/dec) separated from 11-year solar cycles (NASA TIMED/GOLD).",
+          };
+        }
+        if (!state.cards.exosphere) {
+          state.cards.exosphere = {
+            title: "CARD 05 // EXOSPHERE (600–10,000 KM)",
+            finding:
+              "Exobase boundary altitude shifts downward (-12.5 km/dec) and collisionless H-geocorona density adjusts in response to underlying thermospheric contraction.",
+          };
+        }
+        updateHudCounters();
+      }
+
+      /*************************************************************************
+       * 8C. PHASE 4 EXOSPHERE OBSERVATION DECK INSTRUMENTS (5A & 5B)
+       *************************************************************************/
+      function openExosphereGeocoronaModal() {
+        state.exoScannerDone = true;
+        document.getElementById("modalTitle").textContent =
+          "🌍 INSTRUMENT 5A: GEOCORONA LYMAN-ALPHA SCANNER (600–10,000 KM)";
+        const hDensity = Math.round(
+          45000 * Math.exp(-(state.exoAltitude - 600) / 1450),
+        );
+        const exobaseShiftKm = (-12.5 * (state.exoAltitude / 1250)).toFixed(1);
+
+        document.getElementById("modalBody").innerHTML = `
+        <div class="rpg-subbox">
+          <div class="font-pixel" style="font-size:14px; color:#67e8f9; margin-bottom:8px;">
+            SCAN EXOSPHERE RADIAL ALTITUDE: ${state.exoAltitude} KM (GEOCORONA HYDROGEN ENVELOPE)
+          </div>
+          <input type="range" min="600" max="10000" step="50" value="${state.exoAltitude}"
+                 oninput="state.exoAltitude=Number(this.value); openExosphereGeocoronaModal();" />
+        </div>
+
+        <div class="rpg-subbox" style="display:grid; grid-template-columns:repeat(3,1fr); gap:10px; text-align:center;">
+          <div>
+            <div class="font-pixel" style="font-size:12px; color:#94a3b8;">H ATOM DENSITY</div>
+            <div class="font-vt" style="font-size:18px; font-weight:700; color:#38bdf8; margin-top:4px;">${hDensity} atoms/cm³</div>
+          </div>
+          <div>
+            <div class="font-pixel" style="font-size:12px; color:#94a3b8;">EXOBASE ALTITUDE SHIFT</div>
+            <div class="font-vt" style="font-size:18px; font-weight:700; color:#fde047; margin-top:4px;">${exobaseShiftKm} km / dec</div>
+          </div>
+          <div>
+            <div class="font-pixel" style="font-size:12px; color:#94a3b8;">UV SCATTERING</div>
+            <div class="font-pixel" style="font-size:14px; color:#4ade80; margin-top:5px;">LYMAN-ALPHA HALO</div>
+          </div>
+        </div>
+
+        <div class="rpg-subbox" style="font-size:15px; line-height:1.6;">
+          <strong style="color:#fde047;">GEOCORONA OBSERVATION (NASA TWINS / CARRUTHERS):</strong> Earth's outermost atmospheric layer consists of a tenuous cloud of neutral hydrogen atoms (the <em>Geocorona</em>) that scatters solar far-ultraviolet Lyman-alpha light.
+        </div>
+
+        <div style="display:flex; justify-content:space-between;">
+          <button class="rpg-btn" onclick="closeModal()">← RETURN TO OBSERVATION DECK</button>
+          <button class="rpg-btn rpg-btn-gold" onclick="logExosphereScanner()">💾 LOG GEOCORONA &amp; SWITCH TO EXOBASE ANALYZER →</button>
+        </div>
+      `;
+        document.getElementById("rpgModalBackdrop").classList.add("active");
+      }
+
+      function logExosphereScanner() {
+        state.exoScannerDone = true;
+        SFX.confirm();
+        openExosphereBallisticModal();
+      }
+
+      function openExosphereBallisticModal() {
+        state.exoScannerDone = true;
+        document.getElementById("modalTitle").textContent =
+          "🔭 INSTRUMENT 5B: EXOBASE BALLISTIC ESCAPE ANALYZER";
+        const escapeFlux = Math.round(1.8e8 * (state.exoTempK / 950));
+        const meanFreePathKm = Math.round(
+          120 * Math.exp((state.exoAltitude - 600) / 2200),
+        );
+
+        document.getElementById("modalBody").innerHTML = `
+        <div class="rpg-subbox">
+          <div class="font-pixel" style="font-size:14px; color:#fde047; margin-bottom:8px;">
+            EXOSPHERIC KINETIC TEMPERATURE SIMULATION: ${state.exoTempK} K (COLLISIONLESS BALLISTIC REGIME)
+          </div>
+          <input type="range" min="700" max="1400" step="25" value="${state.exoTempK}"
+                 oninput="state.exoTempK=Number(this.value); openExosphereBallisticModal();" />
+        </div>
+
+        <div class="rpg-subbox" style="display:grid; grid-template-columns:repeat(3,1fr); gap:10px; text-align:center;">
+          <div>
+            <div class="font-pixel" style="font-size:12px; color:#94a3b8;">MEAN FREE PATH</div>
+            <div class="font-vt" style="font-size:17px; font-weight:700; color:#38bdf8; margin-top:4px;">&gt; ${meanFreePathKm} km (Collisionless)</div>
+          </div>
+          <div>
+            <div class="font-pixel" style="font-size:12px; color:#94a3b8;">JEANS H ESCAPE FLUX</div>
+            <div class="font-vt" style="font-size:17px; font-weight:700; color:#fde047; margin-top:4px;">${(escapeFlux / 1e8).toFixed(2)}×10⁸ cm⁻²s⁻¹</div>
+          </div>
+          <div>
+            <div class="font-pixel" style="font-size:12px; color:#94a3b8;">BOUNDARY COUPLING</div>
+            <div class="font-pixel" style="font-size:14px; color:#4ade80; margin-top:5px;">LINKED TO THERMOSPHERE</div>
+          </div>
+        </div>
+
+        <div class="rpg-subbox" style="font-size:15px; line-height:1.6;">
+          <strong style="color:#67e8f9;">EXOBASE BALLISTIC DIAGNOSTIC:</strong> Above ~600 km, the mean free path exceeds hundreds of kilometers, so gas particles travel on ballistic arcs without colliding. As greenhouse radiative cooling contracts the Thermosphere below, the exobase boundary drops (-12.5 km/decade) and alters neutral hydrogen density at the threshold of space!
+        </div>
+
+        <div style="display:flex; justify-content:space-between;">
+          <button class="rpg-btn" onclick="openExosphereGeocoronaModal()">← BACK TO GEOCORONA SCANNER (5A)</button>
+          <button class="rpg-btn rpg-btn-gold" onclick="unlockExosphereCard()">💾 UNLOCK CARD 05 &amp; ENTER CENTRAL VAULT</button>
+        </div>
+      `;
+        document.getElementById("rpgModalBackdrop").classList.add("active");
+      }
+
+      function unlockExosphereCard() {
+        state.exoScannerDone = true;
+        state.exoBallisticDone = true;
+        state.cards.exosphere = {
+          title: "CARD 05 // EXOSPHERE (600–10,000 KM)",
+          finding:
+            "Exobase boundary altitude shifts downward (-12.5 km/dec) and collisionless H-geocorona density adjusts in response to underlying thermospheric cooling & contraction (NASA Carruthers / TWINS).",
+        };
+        SFX.fanfare();
+        updateHudCounters();
+        closeModal();
+        showRPGDialogue([
+          {
+            char: "nova",
+            emotion: "happy",
+            text: "Fantastic work! You have unlocked CARD 05: EXOSPHERE EVIDENCE CARD!",
+          },
+          {
+            char: "orbit",
+            emotion: "happy",
+            text: "ALL 5 ATMOSPHERIC LAYER CARDS COLLECTED! Walk North through the sliding blast door into the Central Investigation Vault to use the Evidence Wall!",
+          },
+        ]);
+      }
+
+      function openEvidenceWallModal() {
+        SFX.confirm();
+        document.getElementById("modalTitle").textContent =
+          "🕸️ CASE 05 // THE EVIDENCE WALL (MULTI-LAYER SYNTHESIS)";
+
+        const collectedCount = Object.values(state.cards).filter(
+          Boolean,
+        ).length;
+        const c1 = state.cards.troposphere;
+        const c2 = state.cards.stratosphere;
+        const c3 = state.cards.mesosphere;
+        const c4 = state.cards.thermosphere;
+        const c5 = state.cards.exosphere;
+
+        const linkColor = (val) => {
+          if (val.startsWith("supporting")) return "#4ade80";
+          if (val.startsWith("insufficient")) return "#fde047";
+          return "#f87171";
+        };
+
+        const col1 = linkColor(state.wallConnections.link1_trop_strat);
+        const col2 = linkColor(state.wallConnections.link2_strat_meso);
+        const col3 = linkColor(state.wallConnections.link3_meso_thermo);
+
+        document.getElementById("modalBody").innerHTML = `
+        <div class="rpg-subbox" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+          <div>
+            <div class="font-pixel" style="font-size:14px; color:#67e8f9;">EVIDENCE CARDS COLLECTED: ${collectedCount} / 5 LAYERS</div>
+            <div style="font-size:13px; color:#cbd5e1;">Connect the findings across all 5 atmospheric layers to evaluate what the multi-altitude signal reveals.</div>
+          </div>
+          ${
+            collectedCount < 5
+              ? `
+            <button class="rpg-btn rpg-btn-gold" onclick="ensureAllLayerCardsForSynthesis(); openEvidenceWallModal();">
+              ⚡ AUTO-LOAD ALL 5 LAYER CARDS (SANDBOX)
+            </button>
+          `
+              : `<span class="font-pixel" style="font-size:13px; color:#4ade80;">✓ ALL 5 LAYER RECORDS PRESENT</span>`
+          }
+        </div>
+
+        <!-- Visual Interactive Relationship Board SVG -->
+        <div class="rpg-subbox" style="padding:10px;">
+          <svg viewBox="0 0 780 155" style="width:100%; height:155px; background:#060d1a; border:2px solid #475569; border-radius:8px;">
+            <!-- Connection Lines -->
+            <line x1="115" y1="78" x2="255" y2="78" stroke="${col1}" stroke-width="4" />
+            <line x1="255" y1="78" x2="395" y2="78" stroke="${col2}" stroke-width="4" stroke-dasharray="6 4" />
+            <line x1="395" y1="78" x2="535" y2="78" stroke="${col3}" stroke-width="4" />
+            <line x1="535" y1="78" x2="675" y2="78" stroke="#4ade80" stroke-width="4" />
+
+            <!-- Layer 1 Node -->
+            <rect x="25" y="32" width="130" height="92" rx="8" fill="#0c2d48" stroke="${c1 ? "#38bdf8" : "#64748b"}" stroke-width="2.5"/>
+            <text x="90" y="54" fill="#38bdf8" font-size="11" font-weight="bold" text-anchor="middle">1. TROPOSPHERE</text>
+            <text x="90" y="72" fill="#f8fafc" font-size="11" text-anchor="middle">Temp: +1.18°C</text>
+            <text x="90" y="90" fill="#67e8f9" font-size="10" text-anchor="middle">H2O: +7.8%/dec</text>
+            <text x="90" y="110" fill="#4ade80" font-size="10" font-weight="bold" text-anchor="middle">WARMING ↑</text>
+
+            <!-- Layer 2 Node -->
+            <rect x="180" y="32" width="130" height="92" rx="8" fill="#172554" stroke="${c2 ? "#60a5fa" : "#64748b"}" stroke-width="2.5"/>
+            <text x="245" y="54" fill="#93c5fd" font-size="11" font-weight="bold" text-anchor="middle">2. STRATOSPHERE</text>
+            <text x="245" y="72" fill="#f8fafc" font-size="11" text-anchor="middle">Temp: -0.58°C/dec</text>
+            <text x="245" y="90" fill="#fde047" font-size="10" text-anchor="middle">MK Test: p&lt;0.001</text>
+            <text x="245" y="110" fill="#38bdf8" font-size="10" font-weight="bold" text-anchor="middle">COOLING ↓</text>
+
+            <!-- Layer 3 Node -->
+            <rect x="335" y="32" width="130" height="92" rx="8" fill="#1e1b4b" stroke="${c3 ? "#818cf8" : "#64748b"}" stroke-width="2.5"/>
+            <text x="400" y="54" fill="#a5b4fc" font-size="11" font-weight="bold" text-anchor="middle">3. MESOSPHERE</text>
+            <text x="400" y="72" fill="#f8fafc" font-size="11" text-anchor="middle">Temp: -1.8°C/dec</text>
+            <text x="400" y="90" fill="#fde047" font-size="10" text-anchor="middle">68% Coverage</text>
+            <text x="400" y="110" fill="#fde047" font-size="10" font-weight="bold" text-anchor="middle">DATA GAPS ⚠</text>
+
+            <!-- Layer 4 Node -->
+            <rect x="490" y="32" width="130" height="92" rx="8" fill="#3b0764" stroke="${c4 ? "#c084fc" : "#64748b"}" stroke-width="2.5"/>
+            <text x="555" y="54" fill="#d8b4fe" font-size="11" font-weight="bold" text-anchor="middle">4. THERMOSPHERE</text>
+            <text x="555" y="72" fill="#f8fafc" font-size="11" text-anchor="middle">Density: -3.8%/dec</text>
+            <text x="555" y="90" fill="#c084fc" font-size="10" text-anchor="middle">Solar Cycle Split</text>
+            <text x="555" y="110" fill="#38bdf8" font-size="10" font-weight="bold" text-anchor="middle">CONTRACTION ↓</text>
+
+            <!-- Layer 5 Node -->
+            <rect x="640" y="32" width="120" height="92" rx="8" fill="#0f172a" stroke="${c5 ? "#e2e8f0" : "#64748b"}" stroke-width="2.5"/>
+            <text x="700" y="54" fill="#e2e8f0" font-size="11" font-weight="bold" text-anchor="middle">5. EXOSPHERE</text>
+            <text x="700" y="72" fill="#f8fafc" font-size="11" text-anchor="middle">Exobase: -12km/dec</text>
+            <text x="700" y="90" fill="#67e8f9" font-size="10" text-anchor="middle">Geocorona Halo</text>
+            <text x="700" y="110" fill="#4ade80" font-size="10" font-weight="bold" text-anchor="middle">COUPLED ✓</text>
+          </svg>
+        </div>
+
+        <!-- Relationship Connectors Selector -->
+        <div class="rpg-subbox" style="display:flex; flex-direction:column; gap:10px;">
+          <div class="font-pixel" style="font-size:14px; color:#fde047;">ESTABLISH SCIENTIFIC EVIDENCE RELATIONSHIPS:</div>
+
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; border-bottom:1px solid #334155; padding-bottom:8px;">
+            <span style="font-size:14px;"><strong>Link A (Troposphere ↔ Stratosphere):</strong> Why does the Troposphere warm while the Stratosphere cools?</span>
+            <select style="background:#0f172a; color:#f8fafc; border:2px solid #38bdf8; border-radius:6px; padding:5px 10px; font-family:'Chakra Petch',sans-serif; font-weight:700;"
+                    onchange="state.wallConnections.link1_trop_strat=this.value; openEvidenceWallModal();">
+              <option value="supporting_radiative" ${state.wallConnections.link1_trop_strat === "supporting_radiative" ? "selected" : ""}>✓ Supporting Evidence: Greenhouse heat-trapping below &amp; radiative cooling above</option>
+              <option value="contradicting_error" ${state.wallConnections.link1_trop_strat === "contradicting_error" ? "selected" : ""}>✗ Contradicting Evidence: Instrument calibration error</option>
+            </select>
+          </div>
+
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; border-bottom:1px solid #334155; padding-bottom:8px;">
+            <span style="font-size:14px;"><strong>Link B (Stratosphere ↔ Mesosphere):</strong> How do we classify the fragmented Mesosphere record?</span>
+            <select style="background:#0f172a; color:#f8fafc; border:2px solid #fde047; border-radius:6px; padding:5px 10px; font-family:'Chakra Petch',sans-serif; font-weight:700;"
+                    onchange="state.wallConnections.link2_strat_meso=this.value; openEvidenceWallModal();">
+              <option value="insufficient_coverage" ${state.wallConnections.link2_strat_meso === "insufficient_coverage" ? "selected" : ""}>⚠ Consistent Cooling Trend with Documented Observation Coverage Gaps (68%)</option>
+              <option value="contradicting_stopped" ${state.wallConnections.link2_strat_meso === "contradicting_stopped" ? "selected" : ""}>✗ Signal Stopped Completely in the Mesosphere</option>
+            </select>
+          </div>
+
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+            <span style="font-size:14px;"><strong>Link C (Lower/Middle Layers ↔ Thermosphere &amp; Exosphere):</strong> What drives the long-term contraction?</span>
+            <select style="background:#0f172a; color:#f8fafc; border:2px solid #4ade80; border-radius:6px; padding:5px 10px; font-family:'Chakra Petch',sans-serif; font-weight:700;"
+                    onchange="state.wallConnections.link3_meso_thermo=this.value; openEvidenceWallModal();">
+              <option value="supporting_contraction" ${state.wallConnections.link3_meso_thermo === "supporting_contraction" ? "selected" : ""}>✓ Supporting Evidence: Upper-atmosphere CO2/NO radiative cooling &amp; density contraction</option>
+              <option value="contradicting_solar_only" ${state.wallConnections.link3_meso_thermo === "contradicting_solar_only" ? "selected" : ""}>✗ Unrelated: Caused 100% by short-term aurora storms</option>
+            </select>
+          </div>
+        </div>
+
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <button class="rpg-btn" onclick="closeModal()">← RETURN TO INVESTIGATION VAULT</button>
+          <button class="rpg-btn rpg-btn-gold" onclick="verifyEvidenceWall()">💾 LOCK EVIDENCE SYNTHESIS &amp; PROCEED TO FINAL REPORT →</button>
+        </div>
+      `;
+        document.getElementById("rpgModalBackdrop").classList.add("active");
+      }
+
+      function verifyEvidenceWall() {
+        const c = state.wallConnections;
+        if (
+          c.link1_trop_strat !== "supporting_radiative" ||
+          c.link2_strat_meso !== "insufficient_coverage" ||
+          c.link3_meso_thermo !== "supporting_contraction"
+        ) {
+          showRPGDialogue([
+            {
+              char: "archivist",
+              text: "Review your three relationship links carefully, Detective! Remember: opposite trends in different layers (tropospheric warming vs. upper-atmosphere cooling) are driven by the same radiative process, and Mesosphere data gaps must be noted!",
+            },
+          ]);
+          return;
+        }
+        ensureAllLayerCardsForSynthesis();
+        state.wallVerified = true;
+        SFX.fanfare();
+        openFinalReportModal();
+      }
+
+      function openFinalReportModal() {
+        SFX.confirm();
+        document.getElementById("modalTitle").textContent =
+          "📋 STAGE 8 // OFFICIAL EARTH DETECTIVE FINAL REPORT TERMINAL";
+
+        document.getElementById("modalBody").innerHTML = `
+        <div class="rpg-subbox" style="border-color:${state.reportSubmitted ? "#4ade80" : "#38bdf8"};">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+            <span class="font-title" style="font-size:15px; color:#fde047;">PROJECT ORBIT — MULTI-LAYER INVESTIGATION DOSSIER</span>
+            <span class="font-pixel" style="font-size:13px; color:${state.reportSubmitted ? "#4ade80" : "#67e8f9"};">
+              ${state.reportSubmitted ? "✓ CERTIFIED BY COMMANDER ATLAS" : "STATUS: READY FOR SUBMISSION"}
+            </span>
+          </div>
+
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:10px;">
+            <div>
+              <div class="font-pixel" style="font-size:13px; color:#67e8f9; margin-bottom:4px;">1. PRIMARY SCIENTIFIC CONCLUSION:</div>
+              <select style="width:100%; background:#0f172a; color:#f8fafc; border:2px solid #64748b; border-radius:6px; padding:8px; font-family:'Chakra Petch',sans-serif; font-weight:600;"
+                      onchange="state.reportHypothesis=this.value">
+                <option value="coupled_radiative_system" ${state.reportHypothesis === "coupled_radiative_system" ? "selected" : ""}>
+                  Coupled Earth-System Trend: Tropospheric warming &amp; moistening occur alongside Stratospheric, Mesospheric &amp; Thermospheric cooling/contraction.
+                </option>
+                <option value="isolated_random_noise" ${state.reportHypothesis === "isolated_random_noise" ? "selected" : ""}>
+                  Isolated Random Noise: Layers do not interact and trends are statistically insignificant.
+                </option>
+              </select>
+            </div>
+
+            <div>
+              <div class="font-pixel" style="font-size:13px; color:#fde047; margin-bottom:4px;">2. DATA QUALITY &amp; UNCERTAINTY STATEMENT:</div>
+              <select style="width:100%; background:#0f172a; color:#f8fafc; border:2px solid #64748b; border-radius:6px; padding:8px; font-family:'Chakra Petch',sans-serif; font-weight:600;"
+                      onchange="state.reportLimitation=this.value">
+                <option value="meso_gaps_and_solar_cycle" ${state.reportLimitation === "meso_gaps_and_solar_cycle" ? "selected" : ""}>
+                  High confidence (p &lt; 0.001) in Troposphere/Stratosphere; Mesosphere limited by 68% limb-sounding coverage; Thermosphere requires 11-yr solar cycle separation.
+                </option>
+                <option value="no_limitations" ${state.reportLimitation === "no_limitations" ? "selected" : ""}>
+                  100% Perfect Coverage in all layers with zero uncertainty.
+                </option>
+              </select>
+            </div>
+          </div>
+
+          <div style="margin-top:12px;">
+            <div class="font-pixel" style="font-size:13px; color:#4ade80; margin-bottom:4px;">3. DETECTIVE SYNTHESIS NOTES (EDITABLE FOR EXPORT):</div>
+            <textarea id="reportNotesInput" rows="2" style="width:100%; background:#09101d; color:#f8fafc; border:2px solid #475569; border-radius:6px; padding:8px; font-family:'Chakra Petch',sans-serif; font-size:14px;"
+                      oninput="state.reportCustomNote=this.value">${state.reportCustomNote}</textarea>
+          </div>
+        </div>
+
+        <!-- Layer Evidence Summary Table -->
+        <div class="rpg-subbox" style="font-size:13px; line-height:1.55;">
+          <div class="font-pixel" style="font-size:13px; color:#67e8f9; margin-bottom:6px;">ATTACHED NASA SATELLITE &amp; STATISTICAL EVIDENCE:</div>
+          <div>• <strong>Layer 1 (Troposphere 0–12 km):</strong> +1.18°C warming &amp; +7.8%/dec water vapor trend (NASA GPM IMERG, MODIS, AIRS).</div>
+          <div>• <strong>Layer 2 (Stratosphere 12–50 km):</strong> -0.58°C/dec cooling &amp; ozone recovery trend verified via Mann-Kendall &amp; Theil-Sen tests (p &lt; 0.001, NASA OMI/OMPS &amp; MERRA-2).</div>
+          <div>• <strong>Layer 3 (Mesosphere 50–85 km):</strong> -1.8°C/dec cooling at mesopause; 32% sampling gap documented honestly (NASA TIMED/SABER &amp; AIM).</div>
+          <div>• <strong>Layer 4 (Thermosphere 85–600 km):</strong> -3.8%/dec neutral density contraction separated from 11-yr solar cycle (NASA TIMED/GOLD; overlapping Ionosphere).</div>
+          <div>• <strong>Layer 5 (Exosphere 600–10,000 km):</strong> Exobase downward shift (-12.5 km/dec) &amp; H-geocorona boundary response.</div>
+        </div>
+
+        <div id="reportCopyFeedback" style="display:none; color:#4ade80; font-weight:700; font-size:14px; margin-bottom:8px;">
+          ✓ Official Investigation Report copied to clipboard!
+        </div>
+
+        <div style="display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px;">
+          <button class="rpg-btn" onclick="openEvidenceWallModal()">← BACK TO EVIDENCE WALL</button>
+          <div style="display:flex; gap:8px;">
+            <button class="rpg-btn" onclick="copyReportToClipboard()">📋 COPY REPORT SUMMARY</button>
+            <button class="rpg-btn rpg-btn-gold" onclick="submitFinalInvestigationReport()">🚀 SUBMIT FINAL REPORT TO COMMANDER ATLAS</button>
+          </div>
+        </div>
+      `;
+        document.getElementById("rpgModalBackdrop").classList.add("active");
+      }
+
+      function copyReportToClipboard() {
+        const summaryText = [
+          "==========================================================",
+          "EARTH//ORBIT — OFFICIAL EARTH DETECTIVE INVESTIGATION REPORT",
+          "NASA Space Apps Challenge 2026 // Team Duurbin",
+          "==========================================================",
+          "MAIN CONCLUSION: Coupled Earth-System Radiative & Dynamical Trend",
+          "STATISTICAL VERIFICATION: Mann-Kendall & Theil-Sen (p < 0.001 in Lower/Middle Atmosphere)",
+          "",
+          "EVIDENCE BY ATMOSPHERIC LAYER:",
+          "1. Troposphere (0-12 km): +1.18°C warming & +7.8%/dec water vapor rise (NASA GPM/MODIS/AIRS)",
+          "2. Stratosphere (12-50 km): -0.58°C/dec cooling & post-1998 ozone healing (NASA OMI/OMPS/MERRA-2)",
+          "3. Mesosphere (50-85 km): -1.8°C/dec cooling; 68% observation coverage limitation documented (TIMED/SABER)",
+          "4. Thermosphere (85-600 km): -3.8%/dec density contraction separated from 11-yr solar cycle (TIMED/GOLD)",
+          "5. Exosphere (600-10,000 km): Exobase downward shift (-12.5 km/dec) & geocorona response",
+          "",
+          "DETECTIVE NOTES: " + state.reportCustomNote,
+          "==========================================================",
+        ].join("\n");
+
+        const tempArea = document.createElement("textarea");
+        tempArea.value = summaryText;
+        document.body.appendChild(tempArea);
+        tempArea.select();
+        try {
+          document.execCommand("copy");
+        } catch (e) {}
+        document.body.removeChild(tempArea);
+
+        const fb = document.getElementById("reportCopyFeedback");
+        if (fb) fb.style.display = "block";
+        SFX.confirm();
+      }
+
+      function submitFinalInvestigationReport() {
+        if (
+          state.reportHypothesis !== "coupled_radiative_system" ||
+          state.reportLimitation !== "meso_gaps_and_solar_cycle"
+        ) {
+          showRPGDialogue([
+            {
+              char: "atlas",
+              text: "Detective, check your Primary Conclusion and Data Uncertainty selections! Make sure your report reflects the coupled multi-layer trend and honestly documents the Mesosphere sampling limitations.",
+            },
+          ]);
+          return;
+        }
+        ensureAllLayerCardsForSynthesis();
+        state.reportSubmitted = true;
+        SFX.fanfare();
+        closeModal();
+        document.getElementById("hudQuestText").textContent =
+          "MISSION COMPLETE: Official Earth Detective Report Certified!";
+
+        showRPGDialogue(
+          [
+            {
+              char: "atlas",
+              text: "REPORT CERTIFIED! Outstanding work, Detective. You have proven that the mysterious signal is the mathematical echo of Earth's five atmospheric layers responding as one connected system.",
+            },
+            {
+              char: "nova",
+              emotion: "happy",
+              text: "By combining NASA GPM, MODIS, AIRS, OMI, OMPS, MERRA-2, and TIMED/GOLD observations with Mann-Kendall statistical testing, you solved how surface warming couples to upper-atmosphere cooling!",
+            },
+            {
+              char: "orbit",
+              emotion: "happy",
+              text: "CONGRATULATIONS! You are officially promoted to Senior Earth System Detective! You can export your report or revisit any layer at any time.",
+            },
+          ],
+          {
+            label: "📋 VIEW / EXPORT CERTIFIED REPORT",
+            fn: openFinalReportModal,
+          },
+        );
+      }
+
+      function openElevatorModal() {
+        SFX.confirm();
+        document.getElementById("modalTitle").textContent =
+          "🛗 PROJECT ORBIT // ATMOSPHERIC ELEVATOR";
+        const floors = [
+          {
+            key: "exosphere",
+            name: "5. EXOSPHERE STATION (600–10,000 KM)",
+            desc: "Outer Space Boundary, Evidence Wall & Final Report Terminal",
+          },
+          {
+            key: "thermosphere",
+            name: "4. THERMOSPHERE DECK (85–600 KM)",
+            desc: "Auroras, Overlapping Ionosphere & Satellite Tracker",
+          },
+          {
+            key: "mesosphere",
+            name: "3. MESOSPHERE OBSERVATORY (50–85 KM)",
+            desc: "Meteor Trails, -90°C Mesopause & Data Coverage Lab",
+          },
+          {
+            key: "stratosphere",
+            name: "2. STRATOSPHERE OZONE LAB (12–50 KM)",
+            desc: "Ozone Layer (OMI/OMPS) & Mann-Kendall Trend Lab",
+          },
+          {
+            key: "troposphere",
+            name: "1. TROPOSPHERE SKY-STATION (8.5 KM)",
+            desc: "Cloud Deck, Weather Signal Scanner & AIRS Profile",
+          },
+          {
+            key: "eda_station",
+            name: "0. EDA GROUND BASE (0 KM SURFACE)",
+            desc: "Multi-Room Station: Quarters, Corridor, Commons & Bridge",
+          },
+        ];
+
+        document.getElementById("modalBody").innerHTML = floors
+          .map(
+            (f) => `
+        <div class="rpg-subbox" style="display:flex; justify-content:space-between; align-items:center; gap:12px;">
+          <div>
+            <div class="font-pixel" style="font-size:15px; color:${state.currentMap === f.key ? "#fde047" : "#67e8f9"};">${f.name}</div>
+            <div style="font-size:14px; color:#cbd5e1; margin-top:4px;">${f.desc}</div>
+          </div>
+          <button class="rpg-btn ${state.currentMap === f.key ? "rpg-btn-gold" : ""}"
+                  onclick="travelToMap('${f.key}')">
+            ${state.currentMap === f.key ? "📍 CURRENT" : "🛗 TRAVEL →"}
+          </button>
+        </div>
+      `,
+          )
+          .join("");
+        document.getElementById("rpgModalBackdrop").classList.add("active");
+      }
+
+      function travelToMap(mapKey) {
+        SFX.door();
+        document.getElementById("titleScreen").style.display = "none";
+        state.currentMap = mapKey;
+        const m = MAPS[mapKey];
+        player.x = m.spawnX;
+        player.y = m.spawnY;
+        player.targetX = null;
+        player.targetY = null;
+        document.getElementById("hudZoneName").textContent = m.name;
+        document.getElementById("hudAltitude").textContent =
+          `ALT: ${m.altitude}`;
+        closeModal();
+      }
+
+      function openNotebookModal() {
+        document.getElementById("modalTitle").textContent =
+          "📓 DETECTIVE EVIDENCE NOTEBOOK (CARDS 01–05)";
+        const layers = [
+          {
+            key: "troposphere",
+            label: "CARD 01 // TROPOSPHERE (0–12 KM)",
+            hint: "Operate the Weather Signal Scanner (TWSS) & AIRS Profile Console in Layer 1.",
+          },
+          {
+            key: "stratosphere",
+            label: "CARD 02 // STRATOSPHERE (12–50 KM)",
+            hint: "Operate the Ozone Observation Console & Mann-Kendall Trend Lab in Layer 2.",
+          },
+          {
+            key: "mesosphere",
+            label: "CARD 03 // MESOSPHERE (50–85 KM)",
+            hint: "Operate the Signal Receiver & Missing Data Profile Console in Layer 3.",
+          },
+          {
+            key: "thermosphere",
+            label: "CARD 04 // THERMOSPHERE (85–600 KM)",
+            hint: "Operate the TIMED/GOLD Satellite Tracker & Aurora Comparator in Layer 4.",
+          },
+          {
+            key: "exosphere",
+            label: "CARD 05 // EXOSPHERE SYNTHESIS (600–10,000 KM)",
+            hint: "Operate the Geocorona Scanner (5A) & Exobase Ballistic Analyzer (5B) in the Exosphere Observation Deck.",
+          },
+        ];
+
+        document.getElementById("modalBody").innerHTML = layers
+          .map((l) => {
+            const c = state.cards[l.key];
+            return `
+          <div class="rpg-subbox" style="border-color:${c ? "#4ade80" : "#64748b"};">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+              <span class="font-pixel" style="font-size:14px; color:${c ? "#4ade80" : "#fde047"};">${l.label}</span>
+              <span class="font-pixel" style="font-size:12px; color:${c ? "#4ade80" : "#94a3b8"};">${c ? "✓ LOGGED" : "🔒 PENDING"}</span>
+            </div>
+            <p style="font-size:14px; line-height:1.6; color:${c ? "#f8fafc" : "#94a3b8"};">${c ? c.finding : l.hint}</p>
+          </div>
+        `;
+          })
+          .join("");
+        document.getElementById("rpgModalBackdrop").classList.add("active");
+      }
+
+      function openNotebookFromTitle() {
+        openNotebookModal();
+      }
+
+      function openCreditsModal() {
+        SFX.confirm();
+        document.getElementById("modalTitle").textContent =
+          "🛰️ NASA DATA SOURCES, STATISTICAL METHODS & CREDITS";
+        document.getElementById("modalBody").innerHTML = `
+        <div class="rpg-subbox">
+          <div class="font-pixel" style="font-size:14px; color:#fde047; margin-bottom:6px;">TEAM DUURBIN — NASA SPACE APPS CHALLENGE 2026</div>
+          <p style="font-size:14px; line-height:1.6; color:#e2e8f0;">
+            <strong>Challenge:</strong> "Be An Earth System Trend Detective!" — An interactive 2D RPG investigating how trends across Earth's five atmospheric layers are physically and statistically connected.
+          </p>
+        </div>
+
+        <div class="rpg-subbox" style="font-size:14px; line-height:1.65;">
+          <div class="font-pixel" style="font-size:14px; color:#67e8f9; margin-bottom:6px;">EMPIRICAL NASA SATELLITE &amp; REANALYSIS SOURCES:</div>
+          <div>• <strong>Layer 1 — Troposphere (0–12 km):</strong> NASA GPM IMERG (Global Precipitation Measurement), MODIS (Terra/Aqua), &amp; AIRS (Atmospheric Infrared Sounder).</div>
+          <div>• <strong>Layer 2 — Stratosphere (12–50 km):</strong> NASA TOMS, OMI (Aura), OMPS (Suomi-NPP) Merged Total Ozone Record &amp; NASA GMAO MERRA-2 Reanalysis (1979–2025).</div>
+          <div>• <strong>Layer 3 — Mesosphere (50–85 km):</strong> NASA TIMED/SABER Infrared Limb Sounder &amp; AIM (Aeronomy of Ice in the Mesosphere).</div>
+          <div>• <strong>Layer 4 — Thermosphere (85–600 km):</strong> NASA TIMED &amp; GOLD (Global-scale Observations of the Limb and Disk) — with overlapping Ionosphere (D, E, F regions).</div>
+          <div>• <strong>Layer 5 — Exosphere (600–10,000 km):</strong> NASA TWINS &amp; Carruthers Geocorona Observatory Lyman-alpha ultraviolet hydrogen halo measurements.</div>
+        </div>
+
+        <div class="rpg-subbox" style="font-size:14px; line-height:1.6;">
+          <div class="font-pixel" style="font-size:14px; color:#4ade80; margin-bottom:6px;">STATISTICAL &amp; SCIENTIFIC METHODOLOGY:</div>
+          <p>
+            Trend detection in Layer 2 executes live non-parametric <strong>Mann-Kendall trend tests</strong> (<em>S</em> statistic, <em>Z</em>-score, and two-tailed <em>p</em>-value) alongside the <strong>Theil-Sen median slope estimator</strong> to guard against outliers such as temporary volcanic aerosol spikes (1982 El Chichón, 1991 Mt. Pinatubo).
+          </p>
+        </div>
+      `;
+        document.getElementById("rpgModalBackdrop").classList.add("active");
+      }
+
+      function openSettingsModal() {
+        SFX.confirm();
+        document.getElementById("modalTitle").textContent =
+          "⚙️ SETTINGS, ACCESSIBILITY & JUDGE SANDBOX CONTROLS";
+        document.getElementById("modalBody").innerHTML = `
+        <div class="rpg-subbox" style="display:flex; flex-direction:column; gap:12px;">
+          <div class="font-pixel" style="font-size:14px; color:#67e8f9;">AUDIO &amp; DISPLAY CONTROLS:</div>
+          <div style="display:flex; gap:10px; flex-wrap:wrap;">
+            <button class="rpg-btn" onclick="toggleMute(); openSettingsModal();">🔊 Toggle Sound Effects (${SFX.muted ? "MUTED" : "ON"})</button>
+            <button class="rpg-btn" onclick="toggleBgm(); openSettingsModal();">🎵 Toggle Ambient Space Synth (${SFX.bgmPlaying ? "ON" : "OFF"})</button>
+            <button class="rpg-btn" onclick="document.getElementById('sheetFileInput').click()">📷 Load Local Expression Sheet PNG</button>
+          </div>
+        </div>
+
+        <div class="rpg-subbox" style="display:flex; flex-direction:column; gap:12px;">
+          <div class="font-pixel" style="font-size:14px; color:#fde047;">NASA SPACE APPS JUDGE FAST-TRACK SANDBOX:</div>
+          <p style="font-size:14px; color:#cbd5e1; line-height:1.55;">
+            All 5 atmospheric layers are unlocked in the Atmospheric Elevator from the start so judges can inspect any layer, run the Mann-Kendall statistical lab, or jump straight to the Exosphere Evidence Wall &amp; Final Report.
+          </p>
+          <div style="display:flex; gap:10px; flex-wrap:wrap;">
+            <button class="rpg-btn rpg-btn-gold" onclick="document.getElementById('titleScreen').style.display='none'; ensureAllLayerCardsForSynthesis(); closeModal(); openEvidenceWallModal();">
+              ⚡ Unlock All 5 Evidence Cards &amp; Open Evidence Wall
+            </button>
+            <button class="rpg-btn" onclick="document.getElementById('titleScreen').style.display='none'; closeModal(); openFinalReportModal();">
+              📋 Jump to Final Report Terminal
+            </button>
+            <button class="rpg-btn" style="background:#7f1d1d; border-color:#fca5a5;" onclick="resetGameProgress()">
+              🗑️ Reset Saved Progress
+            </button>
+          </div>
+        </div>
+      `;
+        document.getElementById("rpgModalBackdrop").classList.add("active");
+      }
+
+      function closeModal() {
+        document.getElementById("rpgModalBackdrop").classList.remove("active");
+      }
+
+      function startNewGame() {
+        const bgm = document.getElementById("bgmPlayer");
+        if (bgm && bgm.paused) {
+          bgm.volume = 0.4;
+          bgm.play().catch((e) => {});
+        }
+        SFX.confirm();
+        document.getElementById("titleScreen").style.display = "none";
+        travelToMap(state.currentMap || "eda_station");
+        if (!state.prologueDone) {
+          showRPGDialogue([
+            {
+              char: "player",
+              text: "I'm inside my Quarters at the station. My Home Satellite Terminal just detected an encrypted signal across all 5 atmospheric layers!",
+            },
+            {
+              char: "orbit",
+              emotion: "explaining",
+              text: "Walk up to your terminal [E], or walk East through the sliding door to explore the Central Corridor, Commons, and Main Bridge!",
+            },
+          ]);
+        }
+      }
+
+      function openElevatorFromTitle() {
+        openElevatorModal();
+      }
+
+      // Populate Title Screen HD Bust Preview Strip
+      function setupTitleBusts() {
+        const container = document.getElementById("titleBustsStrip");
+        const previews = [
+          { char: "nova", emotion: "explaining" },
+          { char: "atlas", emotion: "neutral" },
+          { char: "orbit", emotion: "happy" },
+          { char: "player", emotion: "neutral" },
+        ];
+        container.innerHTML = previews
+          .map(
+            (p, i) => `
+        <div id="titleBust_${i}" style="width:72px; height:84px; border-radius:8px; border:2px solid #cbd5e1; background:${HD_PORTRAITS[p.char].bg}; overflow:hidden; box-shadow:0 4px 10px rgba(0,0,0,0.5); display:flex; align-items:center; justify-content:center; position:relative;">
+        </div>
+      `,
+          )
+          .join("");
+
+        const sheet = document.getElementById("img_exprSheet");
+        const activeSheetUrl =
+          customSheetBlobUrl || "Char/Dr. Nova and Orbit Expression Sheet.png";
+        previews.forEach((p, i) => {
+          const bustDiv = document.getElementById(`titleBust_${i}`);
+          if (
+            (p.char === "nova" || p.char === "orbit") &&
+            sheet &&
+            sheet.complete &&
+            !sheet.failed &&
+            sheet.naturalWidth > 0
+          ) {
+            bustDiv.style.background = "#000";
+
+            const imgDiv = document.createElement("div");
+            imgDiv.style.width = "100%";
+            imgDiv.style.height = "100%";
+            imgDiv.style.backgroundImage = `url("${activeSheetUrl}")`;
+            imgDiv.style.backgroundSize = "600% 200%";
+
+            const rowPos = p.char === "nova" ? "0%" : "100%";
+            const colIndex = EMOTION_COLS[p.emotion] || 0;
+            const colPos = colIndex * 20 + "%";
+            imgDiv.style.backgroundPosition = `${colPos} ${rowPos}`;
+
+            bustDiv.appendChild(imgDiv);
+          } else {
+            bustDiv.innerHTML = HD_PORTRAITS[p.char].getSvg
+              ? HD_PORTRAITS[p.char].getSvg(p.emotion)
+              : HD_PORTRAITS[p.char].svg || "";
+          }
+        });
+      }
+
+      // Auto-update title busts if the image finishes loading after script execution
+      document.getElementById("img_exprSheet").addEventListener("load", () => {
+        if (document.getElementById("titleScreen").style.display !== "none") {
+          setupTitleBusts();
+        }
+      });
+
+      function gameLoop() {
+        updatePhysics();
+        renderWorld();
+        requestAnimationFrame(gameLoop);
+      }
+
+      loadGameState();
+      setupTitleBusts();
+      requestAnimationFrame(gameLoop);
+    </script>
   </body>
 </html>
