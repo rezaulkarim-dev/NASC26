@@ -33,6 +33,30 @@ For students and the general public, raw satellite tables and isolated academic 
 
 ---
 
+## Visual Walkthrough & Gameplay
+
+| 1. Title Screen & NASA Data Citations | 2. EDA Ground Base & Expression Engine |
+| :---: | :---: |
+| ![Title Screen](screenshots/01-title-screen.png) | ![Ground Base Dialogue](screenshots/02-ground-base-dialogue.png) |
+| **Mission Briefing:** Inspect empirical NASA satellite sources and statistical methods before launching the investigation with Dr. Nova, Commander Atlas, ORBIT AI, and Junior Detective Steve. | **Guided Mentorship:** Explore the multi-room EDA Station at 0.0 km and interact with station specialists using a dynamic 6-emotion portrait system. |
+
+| 3. Atmospheric Elevator (0 to 10,000 km) | 4. Detective Evidence Notebook (Cards 01-05) |
+| :---: | :---: |
+| ![Atmospheric Elevator](screenshots/03-atmospheric-elevator.png) | ![Detective Evidence Notebook](screenshots/04-evidence-notebook.png) |
+| **Vertical Column Transit:** Board the Atmospheric Elevator to travel seamlessly from the EDA Ground Base (0 km) up through all 5 atmospheric stations to the Exosphere (600-10,000 km). | **Structured Investigation Loop:** Log verified empirical findings across all five layers—starting with Card 01 (+1.18 deg C warming and +7.8%/decade moisture intensification). |
+
+| 5. Troposphere Scanner & AIRS Lab (0-12 km) | 6. Stratosphere Ozone & Mann-Kendall Lab (12-50 km) |
+| :---: | :---: |
+| ![Troposphere Console](screenshots/05-troposphere-console.png) | ![Mann-Kendall Lab](screenshots/06-mann-kendall-lab.png) |
+| **Regional Warming & Moisture:** Tune the NASA GPM / MODIS scanner across the Bay of Bengal (22 deg N, 91 deg E), Arctic Basin, and Tropical Pacific to measure warming (+1.14 deg C) and water vapor trends (+7.1%/decade). | **Live Statistical Testing:** Slice 1979-2025 NASA OMI/OMPS ozone and temperature time series (CFC depletion vs. Montreal recovery) to compute live Mann-Kendall S, Z-statistics, p-values, and Theil-Sen slopes. |
+
+| 7. Upper-Atmosphere Consoles (50-10,000 km) | 8. Multi-Layer Evidence Wall Synthesis |
+| :---: | :---: |
+| ![Upper Atmosphere Consoles](screenshots/07-upper-atmosphere.png) | ![Evidence Wall](screenshots/08-evidence-wall.png) |
+| **Cooling, Solar Cycles & Geocorona:** Detect -1.8 deg C/decade mesopause cooling with a 32% limb-sampling gap (TIMED/SABER), separate 11-year solar cycles from -3.8%/decade thermospheric contraction, and scan the 7,900 km Lyman-alpha Geocorona. | **System-Level Proof:** Connect all 5 Evidence Cards in the Central Vault to establish how lower-atmosphere heat trapping physically drives upper-atmosphere radiative cooling and contraction. |
+
+---
+
 ### 2. How It Works: Five Layers, Ten Instruments, and Live Statistical Testing
 
 Players navigate a multi-room pixel-art orbital complex using `WASD` / `Arrow Keys`, mouse click-to-walk, or an on-screen mobile D-pad, boarding the **Atmospheric Elevator** to investigate five distinct stations:
