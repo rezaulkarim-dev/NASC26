@@ -17,9 +17,6 @@
 **EARTH//ORBIT (The Earth Detective Agency)** is an interactive 2D scientific role-playing game (RPG) that transforms over 40 years of NASA satellite and reanalysis observations into a hands-on mystery across all five layers of Earth's atmosphere (0 km to 10,000 km). Built for high school students, university learners, educators, and citizen scientists, it solves the problem of overwhelming, disconnected climate datasets by empowering players to investigate how a single physical process drives opposite trends in different atmospheric regions. Guided by scientific mentors (Dr. Nova, Commander Atlas, and ORBIT AI), players operate interactive satellite consoles, run live non-parametric Mann-Kendall significance tests and Theil-Sen slope estimators in the browser, and connect multi-layer evidence on an interactive Evidence Wall to certify their final Earth System Dossier.
 
 * **Live Playable Demo (No Login Required):** [https://earthorbit-nasa.netlify.app/](https://earthorbit-nasa.netlify.app/)
-* **240-Second Local Judging Video:** `[PASTE_YOUR_240S_YOUTUBE_LINK_HERE]`
-* **30-Second Global Judging Video:** `[PASTE_YOUR_30S_YOUTUBE_LINK_HERE]`
-* **Public GitHub Repository:** `[PASTE_YOUR_GITHUB_REPO_LINK_HERE]`
 
 ---
 
